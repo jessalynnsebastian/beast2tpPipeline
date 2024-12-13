@@ -28,5 +28,6 @@ Suggests:
     rmarkdown,
     devtools,
     parallel
+Remotes: JamesStimson/transcluster
 VignetteBuilder: knitr
 URL: https://jessalynnsebastian.github.io/beast2tpPipeline/

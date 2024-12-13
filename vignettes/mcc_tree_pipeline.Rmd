@@ -36,7 +36,7 @@ To use this package, you will need to have some dependencies installed. You can 
 
 ```{r install_deps, eval=FALSE}
 install.packages(c("ape", "TransPhylo", "coda", "tracerer", "lubridate", "tidyverse"))
-devtools::install_github("JamesStimson/transcluster", build_vignettes = TRUE)
+remotes::install_github("JamesStimson/transcluster", build_vignettes = TRUE)
 ```
 
 You will also need to have BEAST2 installed on your computer. You can download it [here](https://www.beast2.org/). If you use
