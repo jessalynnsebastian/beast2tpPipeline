@@ -163,7 +163,7 @@ BEAUti. Use the argument `fasta_dir` to save the fasta files to that directory, 
 default to not save the fasta files.
 
 
-```{r create_clusters}
+```{r create_clusters, eval = F}
 # For each lineage, use the cluster assignments to put the sequences into clusters
 snp_matrices <- lapply(seq_along(tb_sequences), function(lineage_index) {
   create_BEAST2_clusters(seqs = tb_sequences[[lineage_index]],
@@ -199,7 +199,7 @@ input_xml <- list.files("~/Code/beast2tpPipeline_example/BEAST2", pattern = "\\.
 invisible(parallel::mclapply(input_xml, run_beast2, mc.cores = cores))
 ```
 
-```{r check_beast2_mixing}
+```{r check_beast2_mixing, eval = F}
 beast_logs <- list.files("~/Code/beast2tpPipeline_example/BEAST2", pattern = "\\.log", full.names = TRUE)
 invisible(sapply(beast_logs, function(log) {
   ess_checks("BEAST2", log, min_ess = 200)
@@ -230,11 +230,11 @@ prob_source <- run_TransPhylo(mcc_trees,
                               verbose = TRUE)
 ```
 
-```{r, get_probs, include = F}
+```{r, get_probs, include = F, eval = F}
 prob_source <- readRDS("~/Code/beast2tpPipeline_example/TransPhylo/tp_res_prob_source.rds")
 ```
 
-```{r regression}
+```{r regression, eval = F}
 # Get dataframe with covariates for regression
 cleaned_data <- metadata[, c("SampleID", "hivfinal_new")]
 cleaned_data <- cleaned_data[complete.cases(cleaned_data), ]
