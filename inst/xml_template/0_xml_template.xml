@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><beast beautitemplate='Standard' beautistatus='' namespace="beast.core:beast.evolution.alignment:beast.evolution.tree.coalescent:beast.core.util:beast.evolution.nuc:beast.evolution.operators:beast.evolution.sitemodel:beast.evolution.substitutionmodel:beast.base.evolution.alignment:beast.pkgmgmt:beast.base.core:beast.base.inference:beast.base.evolution.tree.coalescent:beast.pkgmgmt:beast.base.core:beast.base.inference.util:beast.evolution.nuc:beast.base.evolution.operator:beast.base.inference.operator:beast.base.evolution.sitemodel:beast.base.evolution.substitutionmodel:beast.base.evolution.likelihood" required="BEAST.base v2.7.7" version="2.7">
+
+    <data
+ascertained = "true"
+excludeto = "4"
+id="SNP_FILE_NAME_HERE"
+spec="Alignment"
+name="alignment">
+        ALIGNMENT_INFORMATION_HERE
+    </data>
+
+    <map name="Uniform" >beast.base.inference.distribution.Uniform</map>
+
+    <map name="Exponential" >beast.base.inference.distribution.Exponential</map>
+
+    <map name="LogNormal" >beast.base.inference.distribution.LogNormalDistributionModel</map>
+
+    <map name="Normal" >beast.base.inference.distribution.Normal</map>
+
+    <map name="Beta" >beast.base.inference.distribution.Beta</map>
+
+    <map name="Gamma" >beast.base.inference.distribution.Gamma</map>
+
+    <map name="LaplaceDistribution" >beast.base.inference.distribution.LaplaceDistribution</map>
+
+    <map name="prior" >beast.base.inference.distribution.Prior</map>
+
+    <map name="InverseGamma" >beast.base.inference.distribution.InverseGamma</map>
+
+    <map name="OneOnX" >beast.base.inference.distribution.OneOnX</map>
+
+    <run id="mcmc" spec="MCMC" chainLength="MCMC_ITERATIONS_HERE" storeEvery="STORE_EVERY_HERE">
+        <state id="state" spec="State" storeEvery="STORE_EVERY_HERE">
+            <tree id="Tree.t:SNP_FILE_NAME_HERE" spec="beast.base.evolution.tree.Tree" name="stateNode">
+                <trait id="dateTrait.t:SNP_FILE_NAME_HERE" spec="beast.base.evolution.tree.TraitSet" dateFormat="yyyy-M-dd" traitname="date" value="DATE_INFORMATION_HERE">
+                    <taxa id="TaxonSet.SNP_FILE_NAME_HERE" spec="TaxonSet">
+                        <alignment idref="SNP_FILE_NAME_HERE"/>
+                    </taxa>
+                </trait>
+                <taxonset idref="TaxonSet.SNP_FILE_NAME_HERE"/>
+            </tree>
+            <parameter id="clockRate.c:SNP_FILE_NAME_HERE" spec="parameter.RealParameter" lower="0.0" name="stateNode">CLOCKRATE_INITIAL_HERE</parameter>
+            <parameter id="kappa.s:SNP_FILE_NAME_HERE" spec="parameter.RealParameter" lower="0.0" name="stateNode">2.0</parameter>
+            <parameter id="freqParameter.s:SNP_FILE_NAME_HERE" spec="parameter.RealParameter" dimension="4" lower="0.0" name="stateNode" upper="1.0">0.25</parameter>
+            <parameter id="popSize.t:SNP_FILE_NAME_HERE" spec="parameter.RealParameter" lower="0.0" name="stateNode">0.3</parameter>
+        </state>
+        <init id="RandomTree.t:SNP_FILE_NAME_HERE" spec="RandomTree" estimate="false" initial="@Tree.t:SNP_FILE_NAME_HERE" taxa="@SNP_FILE_NAME_HERE">
+            <populationModel id="ConstantPopulation0.t:SNP_FILE_NAME_HERE" spec="ConstantPopulation">
+                <parameter id="randomPopSize.t:SNP_FILE_NAME_HERE" spec="parameter.RealParameter" name="popSize">1.0</parameter>
+            </populationModel>
+        </init>
+        <distribution id="posterior" spec="CompoundDistribution">
+            <distribution id="prior" spec="CompoundDistribution">
+                <distribution id="CoalescentConstant.t:SNP_FILE_NAME_HERE" spec="Coalescent">
+                    <populationModel id="ConstantPopulation.t:SNP_FILE_NAME_HERE" spec="ConstantPopulation" popSize="@popSize.t:SNP_FILE_NAME_HERE"/>
+                    <treeIntervals id="TreeIntervals.t:SNP_FILE_NAME_HERE" spec="beast.base.evolution.tree.TreeIntervals" tree="@Tree.t:SNP_FILE_NAME_HERE"/>
+                </distribution>
+                <prior id="ClockPrior.c:SNP_FILE_NAME_HERE" name="distribution" x="@clockRate.c:SNP_FILE_NAME_HERE">
+                    <Uniform id="Uniform.0" lower="CLOCKRATE_MINIMUM_HERE" name="distr" upper="CLOCKRATE_MAXIMUM_HERE"/>
+                </prior>
+                <prior id="FrequenciesPrior.s:SNP_FILE_NAME_HERE" name="distribution" x="@freqParameter.s:SNP_FILE_NAME_HERE">
+                    <LogNormal id="LogNormalDistributionModel.1" name="distr">
+                        <parameter id="RealParameter.4" spec="parameter.RealParameter" estimate="false" name="M">1.0</parameter>
+                        <parameter id="RealParameter.5" spec="parameter.RealParameter" estimate="false" lower="0.0" name="S" upper="5.0">1.25</parameter>
+                    </LogNormal>
+                </prior>
+                <prior id="KappaPrior.s:SNP_FILE_NAME_HERE" name="distribution" x="@kappa.s:SNP_FILE_NAME_HERE">
+                    <LogNormal id="LogNormalDistributionModel.0" name="distr">
+                        <parameter id="RealParameter.1" spec="parameter.RealParameter" estimate="false" name="M">1.0</parameter>
+                        <parameter id="RealParameter.2" spec="parameter.RealParameter" estimate="false" name="S">1.25</parameter>
+                    </LogNormal>
+                </prior>
+                <prior id="PopSizePrior.t:SNP_FILE_NAME_HERE" name="distribution" x="@popSize.t:SNP_FILE_NAME_HERE">
+                    <LogNormal id="LogNormalDistributionModel.2" name="distr">
+                        <parameter id="RealParameter.6" spec="parameter.RealParameter" estimate="false" name="M">1.0</parameter>
+                        <parameter id="RealParameter.7" spec="parameter.RealParameter" estimate="false" lower="0.0" name="S" upper="5.0">1.25</parameter>
+                    </LogNormal>
+                </prior>
+            </distribution>
+            <distribution id="likelihood" spec="CompoundDistribution" useThreads="true">
+                <distribution id="treeLikelihood.SNP_FILE_NAME_HERE" spec="ThreadedTreeLikelihood" data="@SNP_FILE_NAME_HERE" tree="@Tree.t:SNP_FILE_NAME_HERE">
+                    <siteModel id="SiteModel.s:SNP_FILE_NAME_HERE" spec="SiteModel">
+                        <parameter id="mutationRate.s:SNP_FILE_NAME_HERE" spec="parameter.RealParameter" estimate="false" lower="0.0" name="mutationRate">1.0</parameter>
+                        <parameter id="gammaShape.s:SNP_FILE_NAME_HERE" spec="parameter.RealParameter" estimate="false" name="shape">1.0</parameter>
+                        <parameter id="proportionInvariant.s:SNP_FILE_NAME_HERE" spec="parameter.RealParameter" estimate="false" lower="0.0" name="proportionInvariant" upper="1.0">0.0</parameter>
+                        <substModel id="hky.s:SNP_FILE_NAME_HERE" spec="HKY" kappa="@kappa.s:SNP_FILE_NAME_HERE">
+                            <frequencies id="estimatedFreqs.s:SNP_FILE_NAME_HERE" spec="Frequencies" frequencies="@freqParameter.s:SNP_FILE_NAME_HERE"/>
+                        </substModel>
+                    </siteModel>
+                    <branchRateModel id="StrictClock.c:SNP_FILE_NAME_HERE" spec="beast.base.evolution.branchratemodel.StrictClockModel" clock.rate="@clockRate.c:SNP_FILE_NAME_HERE"/>
+                </distribution>
+            </distribution>
+        </distribution>
+        <operator id="StrictClockRateScaler.c:SNP_FILE_NAME_HERE" spec="AdaptableOperatorSampler" weight="1.5">
+            <parameter idref="clockRate.c:SNP_FILE_NAME_HERE"/>
+            <operator id="AVMNOperator.SNP_FILE_NAME_HERE" spec="kernel.AdaptableVarianceMultivariateNormalOperator" allowNonsense="true" beta="0.05" burnin="400" initial="800" weight="0.1">
+                <transformations id="AVMNSumTransform.SNP_FILE_NAME_HERE" spec="operator.kernel.Transform$LogConstrainedSumTransform">
+                    <f idref="freqParameter.s:SNP_FILE_NAME_HERE"/>
+                </transformations>
+                <transformations id="AVMNLogTransform.SNP_FILE_NAME_HERE" spec="operator.kernel.Transform$LogTransform">
+                    <f idref="clockRate.c:SNP_FILE_NAME_HERE"/>
+                    <f idref="kappa.s:SNP_FILE_NAME_HERE"/>
+                </transformations>
+                <transformations id="AVMNNoTransform.SNP_FILE_NAME_HERE" spec="operator.kernel.Transform$NoTransform">
+                    <f idref="Tree.t:SNP_FILE_NAME_HERE"/>
+                </transformations>
+            </operator>
+            <operator id="StrictClockRateScalerX.c:SNP_FILE_NAME_HERE" spec="kernel.BactrianScaleOperator" parameter="@clockRate.c:SNP_FILE_NAME_HERE" upper="10.0" weight="3.0"/>
+        </operator>
+        <operator id="strictClockUpDownOperator.c:SNP_FILE_NAME_HERE" spec="AdaptableOperatorSampler" weight="1.5">
+            <parameter idref="clockRate.c:SNP_FILE_NAME_HERE"/>
+            <tree idref="Tree.t:SNP_FILE_NAME_HERE"/>
+            <operator idref="AVMNOperator.SNP_FILE_NAME_HERE"/>
+            <operator id="strictClockUpDownOperatorX.c:SNP_FILE_NAME_HERE" spec="operator.kernel.BactrianUpDownOperator" scaleFactor="0.75" weight="3.0">
+                <up idref="clockRate.c:SNP_FILE_NAME_HERE"/>
+                <down idref="Tree.t:SNP_FILE_NAME_HERE"/>
+            </operator>
+        </operator>
+        <operator id="KappaScaler.s:SNP_FILE_NAME_HERE" spec="AdaptableOperatorSampler" weight="0.05">
+            <parameter idref="kappa.s:SNP_FILE_NAME_HERE"/>
+            <operator idref="AVMNOperator.SNP_FILE_NAME_HERE"/>
+            <operator id="KappaScalerX.s:SNP_FILE_NAME_HERE" spec="kernel.BactrianScaleOperator" parameter="@kappa.s:SNP_FILE_NAME_HERE" scaleFactor="0.1" upper="10.0" weight="0.1"/>
+        </operator>
+        <operator id="FrequenciesExchanger.s:SNP_FILE_NAME_HERE" spec="AdaptableOperatorSampler" weight="0.05">
+            <parameter idref="freqParameter.s:SNP_FILE_NAME_HERE"/>
+            <operator idref="AVMNOperator.SNP_FILE_NAME_HERE"/>
+            <operator id="FrequenciesExchangerX.s:SNP_FILE_NAME_HERE" spec="operator.kernel.BactrianDeltaExchangeOperator" delta="0.01" weight="0.1">
+                <parameter idref="freqParameter.s:SNP_FILE_NAME_HERE"/>
+            </operator>
+        </operator>
+        <operator id="CoalescentConstantBICEPSEpochTop.t:SNP_FILE_NAME_HERE" spec="EpochFlexOperator" scaleFactor="0.1" tree="@Tree.t:SNP_FILE_NAME_HERE" weight="2.0"/>
+        <operator id="CoalescentConstantBICEPSEpochAll.t:SNP_FILE_NAME_HERE" spec="EpochFlexOperator" fromOldestTipOnly="false" scaleFactor="0.1" tree="@Tree.t:SNP_FILE_NAME_HERE" weight="2.0"/>
+        <operator id="CoalescentConstantBICEPSTreeFlex.t:SNP_FILE_NAME_HERE" spec="TreeStretchOperator" scaleFactor="0.01" tree="@Tree.t:SNP_FILE_NAME_HERE" weight="2.0"/>
+        <operator id="CoalescentConstantTreeRootScaler.t:SNP_FILE_NAME_HERE" spec="kernel.BactrianScaleOperator" rootOnly="true" scaleFactor="0.1" tree="@Tree.t:SNP_FILE_NAME_HERE" upper="10.0" weight="3.0"/>
+        <operator id="CoalescentConstantUniformOperator.t:SNP_FILE_NAME_HERE" spec="kernel.BactrianNodeOperator" tree="@Tree.t:SNP_FILE_NAME_HERE" weight="30.0"/>
+        <operator id="CoalescentConstantSubtreeSlide.t:SNP_FILE_NAME_HERE" spec="kernel.BactrianSubtreeSlide" tree="@Tree.t:SNP_FILE_NAME_HERE" weight="15.0"/>
+        <operator id="CoalescentConstantNarrow.t:SNP_FILE_NAME_HERE" spec="Exchange" tree="@Tree.t:SNP_FILE_NAME_HERE" weight="15.0"/>
+        <operator id="CoalescentConstantWide.t:SNP_FILE_NAME_HERE" spec="Exchange" isNarrow="false" tree="@Tree.t:SNP_FILE_NAME_HERE" weight="3.0"/>
+        <operator id="CoalescentConstantWilsonBalding.t:SNP_FILE_NAME_HERE" spec="WilsonBalding" tree="@Tree.t:SNP_FILE_NAME_HERE" weight="3.0"/>
+        <operator id="PopSizeScaler.t:SNP_FILE_NAME_HERE" spec="kernel.BactrianScaleOperator" parameter="@popSize.t:SNP_FILE_NAME_HERE" upper="10.0" weight="3.0"/>
+        <logger id="tracelog" spec="Logger" fileName="$(filebase).log" logEvery="1000" model="@posterior" sanitiseHeaders="true" sort="smart">
+            <log idref="posterior"/>
+            <log idref="likelihood"/>
+            <log idref="prior"/>
+            <log idref="treeLikelihood.SNP_FILE_NAME_HERE"/>
+            <log id="TreeHeight.t:SNP_FILE_NAME_HERE" spec="beast.base.evolution.tree.TreeStatLogger" tree="@Tree.t:SNP_FILE_NAME_HERE"/>
+            <log idref="clockRate.c:SNP_FILE_NAME_HERE"/>
+            <log idref="kappa.s:SNP_FILE_NAME_HERE"/>
+            <log idref="freqParameter.s:SNP_FILE_NAME_HERE"/>
+            <log idref="popSize.t:SNP_FILE_NAME_HERE"/>
+            <log idref="CoalescentConstant.t:SNP_FILE_NAME_HERE"/>
+        </logger>
+        <logger id="screenlog" spec="Logger" logEvery="1000">
+            <log idref="posterior"/>
+            <log idref="likelihood"/>
+            <log idref="prior"/>
+        </logger>
+        <logger id="treelog.t:SNP_FILE_NAME_HERE" spec="Logger" fileName="$(filebase)-$(tree).trees" logEvery="1000" mode="tree">
+            <log id="TreeWithMetaDataLogger.t:SNP_FILE_NAME_HERE" spec="beast.base.evolution.TreeWithMetaDataLogger" tree="@Tree.t:SNP_FILE_NAME_HERE"/>
+        </logger>
+        <operatorschedule id="OperatorSchedule" spec="OperatorSchedule"/>
+    </run>
+
+</beast>

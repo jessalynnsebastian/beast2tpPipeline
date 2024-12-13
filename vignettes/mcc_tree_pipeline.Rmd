@@ -1,0 +1,229 @@
+---
+title: "Using the BEAST2 - TransPhylo Pipeline with Maximum Clade Credibility Trees"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Using the BEAST2 - TransPhylo Pipeline with Maximum Clade Credibility Trees}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+# Introduction
+
+This vignette will walk you through the process of using the `beast2tpPipeline` package to create SNP clusters
+from a set of fasta files, create xml files for each cluster, run BEAST2, run TransPhylo on the BEAST2 results,
+and then do some kind of regression on the probabilities assigned by TransPhylo.
+
+After running BEAST2, we have a set of posterior trees for each cluster. With this package we can do two things:
+
+1. **Create a [maximum clade credibility (MCC) tree](https://en.wikipedia.org/wiki/Maximum_clade_credibility_tree#:~:text=A%20maximum%20clade%20credibility%20tree,of%20the%20sampled%20posterior%20trees.0)
+from the posterior trees, and run TransPhylo multitree on the MCC trees, sharing some parameters that can be
+simultaneously estimated**. The MCC tree is a single tree that attempts to summarize the posterior trees, like a
+mean or median when posterior samples are values from the real line. With this method we take one tree that
+summarizes the posterior trees for each cluster, and run TransPhylo on all of them as if they are the true 
+phylogenetic trees.
+2. **Subsample some number of trees from the BEAST2 posterior tree samples for each cluster, and run TransPhylo
+on a sample of trees for each cluster, rather than one summary tree**. This has the advantage of accounting for
+some of the phylogenetic uncertainty in the BEAST2 trees, rather than assuming that one tree is the truth. 
+However, it is computationally more expensive: instead of one TransPhylo run on all the clusters, we have to
+run TransPhylo on each cluster separately, each time with a decently-sized set of trees. This should be run
+on a computing cluster. Additionally, via this method, parameter sharing is not possible.
+
+In this vignette, we will use this package to do (1).
+
+# Getting Started
+
+To use this package, you will need to have some dependencies installed. You can install them with the following code:
+
+```{r install_deps, eval=FALSE}
+install.packages(c("ape", "TransPhylo", "coda", "tracerer", "lubridate", "tidyverse"))
+devtools::install_github("JamesStimson/transcluster", build_vignettes = TRUE)
+```
+
+You will also need to have BEAST2 installed on your computer. You can download it [here](https://www.beast2.org/). If you use
+a package manager like homebrew, you can install BEAST2 with `brew install beast2` in your terminal. This will install a suite 
+of programs, including BEAST2, BEAUti, and TreeAnnotator. You will probably also want to install Tracer to look at traceplots
+and other diagnostics of your BEAST2 runs. You can download Tracer [here](https://github.com/beast-dev/tracer/releases/tag/v1.7.2).
+
+Next, install the `beast2tpPipeline` package from GitHub:
+
+```{r install, eval=FALSE}
+devtools::install_github("jessalynnsebastian/beast2tpPipeline", build_vignettes = TRUE)
+```
+
+Then, load the package:
+
+```{r setup}
+library(beast2tpPipeline)
+```
+
+This package is built such that each step in the pipeline has an associated function. The steps and functions are:
+
+1. **Assigning SNP clusters**: `assign_snp_clusters` takes a set of sequences and metadata, and assigns sequences to SNP clusters.
+2. **Creating BEAST2 clusters**: `create_BEAST2_clusters` takes the SNP clusters and separates the sequence data by cluster, keeping only the SNPs.
+3. **Creating XML files for BEAST2**: `create_cluster_xml` takes the SNP data and creates an XML file for BEAST2 to run.
+4. **Running BEAST2**: `run_beast2` runs BEAST2 on the XML file. This is where we take the DNA sequences and infer a timed phylogenetic tree, which tells us about the ancestry of the pathogen.
+5. **Getting the MCC trees**: `get_mcctree` takes the posterior trees from BEAST2 and creates a maximum clade credibility tree - a summary tree, like a mean or median.
+6. **Running TransPhylo on the MCC trees**: `run_TransPhylo` runs TransPhylo on the MCC trees, sharing some parameters that can be simultaneously estimated. This is where we take the timed phylogeny and use it to try to infer who-infected-whom.
+7. **Running a regression on the TransPhylo results**: `regression` runs linear or logistic regression using the TransPhylo results. This is where we draw inference about the relationship between some covariates and individual transmission probabilities.
+
+
+# Data for this Example
+
+This package comes with data collected from the Kopanyo study, in which tuberculosis (TB) samples were collected
+in two regions of Botswana, a country with high prevalence of both TB and human immodeficiency virus (HIV). Read
+more about the study [here](https://bmjopen.bmj.com/content/6/5/e010046).
+
+These data contain 4 fasta files, one for each lineage of TB. Each fasta file contains aligned TB sequences from
+study participants. There is also metadata available for these samples, including things like HIV status, age,
+gender, sample collection date, and a handful of other variables.
+
+Suppose we are interested in using these TB sequences to draw inference on whether having HIV makes an individual
+more likely to transmit TB to someone else.
+
+# Creating Single Nucleotide Polymorphism (SNP) Clusters
+
+First, read the fasta files and the metadata into `R`.
+
+```{r read_data}
+fasta_files <- list.files(system.file("kopanyo", package = "beast2tpPipeline"),
+                          pattern = ".fasta", full.names = TRUE)
+tb_sequences <- lapply(fasta_files, ape::read.dna, format = "fasta", as.character = TRUE)
+
+metadata <- list.files(system.file("kopanyo", package = "beast2tpPipeline"),
+                       pattern = ".csv", full.names = TRUE)
+metadata <- read.csv(metadata)
+``` 
+
+We can take a peek at the data:
+
+```{r data_preview}
+head(metadata)
+
+dim(metadata)
+```
+
+Notice that we have 1426 sequences and corresponding metadata. It would be very computationally intensive to run BEAST2 on all of these sequences
+simultaneously. Instead, we will create clusters of similar sequences and run BEAST2 on each cluster separately. To create clusters, we will use 
+SNP thresholding.
+
+SNPs are single nucleotide polymorphisms, which are single base pair differences between sequences. We can use these differences to group sequences
+into clusters that are more likely to be closely related to each other. We will use the `transcluster` package to do this. `transcluster` is a package
+developed alongside the paper [Beyond the SNP Threshold: Identifying Outbreak Clusters Using Inferred Transmissions](https://academic.oup.com/mbe/article/36/3/587/5300248).
+It was built to handle both plain SNP thresholding to create clusters, and also clustering based on likely transmissions. Here we will use the former,
+as it is simpler and more commonly used, but the latter is still available in the function.
+
+To assign sequences to their clusters based on SNPs, we will use `assign_snp_clusters`, which is a wrapper around some `transcluster` functions.
+
+```{r assign_clusters}
+# Get collection dates by lineage
+collectdts <- split(metadata, metadata$Lineage)
+# Create named vectors of dates, as required by the function
+collectdts <- lapply(collectdts, function(meta) {
+  dates <- meta$collectdt
+  names(dates) <- meta$SampleID
+  dates
+})
+
+# TODO: REMOVE THIS WHEN TESTING IS DONE.
+tb_sequences <- tb_sequences[1:3]
+collectdts <- collectdts[1:3]
+
+# Apply the function to each lineage of sequences
+cluster_assignments <- mapply(assign_snp_clusters,
+                              seqs = tb_sequences,
+                              collectdts = collectdts,
+                              threshold = 5,
+                              SIMPLIFY = FALSE)
+# Take a look at the cluster assignments
+lapply(cluster_assignments, head)
+
+# Rename clusters to include lineage
+cluster_assignments <- lapply(seq_along(cluster_assignments), function(i) {
+  cluster_assignments[[i]]$cluster_name <- paste0("lineage", i, "_", cluster_assignments[[i]]$cluster_name)
+  cluster_assignments[[i]]
+})
+```
+
+Computing the distance matrix for large clusters can take time, so if you already have a distance matrix
+saved, you can pass it to `assign_snp_clusters` with the `dist_matrix` argument.
+
+Next, we will create the actual BEAST2 clusters using the `create_BEAST2_clusters` function. We will take
+the sequences, split them into separate objects, keep only the SNPs (sites that are the same
+across all sequences will not matter to BEAST2), and write them to fasta files to be used by BEAUti or
+by `create_cluster_xml`.
+
+We will discard clusters with fewer than 4 sequences, and clusters with fewer than 8 SNPs. We also add
+constant sites to the sequences, to deal with ascertainment bias in BEAST2 since we are only keeping
+the SNPs.
+
+I will save the fasta files to a directory called `BEAST2_clusters` in my data directory for this project,
+because I am using `create_cluster_xml` to create the xml files necessary for BEAST2. If you are
+using BEAUti to create xml files, you will need to have saved fasta files for each cluster to import into
+BEAUti. Use the argument `fasta_dir` to save the fasta files to that directory, otherwise leave it at its
+default to not save the fasta files.
+
+
+```{r create_clusters}
+# For each lineage, use the cluster assignments to put the sequences into clusters
+snp_matrices <- lapply(seq_along(tb_sequences), function(lineage_index) {
+  create_BEAST2_clusters(seqs = tb_sequences[[lineage_index]],
+                         snp_clusters = setNames(cluster_assignments[[lineage_index]]$cluster_name,
+                                                 cluster_assignments[[lineage_index]]$sample_id),
+                         min_cluster_size = 4,
+                         min_varsites = 8,
+                         snps_only = TRUE,
+                         constant_sites = "acgt")
+})
+# Now we have a list of 4 lineages, each containing a list of clusters (data frames) within that lineage
+# Now that we won't be working with the fasta files themselves anymore, let's turn this list of lists into a list,
+# and let's turn the list of cluster assignments into a data frame
+snp_matrices <- unlist(snp_matrices, recursive = FALSE)
+cluster_assignments <- do.call(rbind, cluster_assignments)
+``` 
+
+```{r write_xml}
+# For each cluster, create an xml file for BEAST2
+invisible(lapply(names(snp_matrices), function(cluster_name) {
+  create_cluster_xml(snps = snp_matrices[[cluster_name]],
+                     cluster_name = cluster_name,
+                     sampling_dates = setNames(cluster_assignments$collectdt[cluster_assignments$cluster_name == cluster_name],
+                                               cluster_assignments$sample_id[cluster_assignments$cluster_name == cluster_name]),
+                     out_dir = "~/Code/beast2tpPipeline_example/BEAST2")
+}))
+
+```
+
+```{r run beast2}
+cores <- parallel::detectCores() / 2
+input_xml <- list.files("~/Code/beast2tpPipeline_example/BEAST2", pattern = "\\.xml", full.names = TRUE)
+invisible(parallel::mclapply(input_xml, run_beast2, mc.cores = cores))
+```
+
+```{r check_beast2_mixing}
+beast_logs <- list.files("~/Code/beast2tpPipeline_example/BEAST2", pattern = "\\.log", full.names = TRUE)
+invisible(sapply(beast_logs, function(log) {
+  ess_checks("BEAST2", log, min_ess = 200)
+}))
+```
+
+```{r get_mcc_trees}
+trees_files <- list.files("~/Code/beast2tpPipeline_example/BEAST2", pattern = ".trees", full.names = TRUE)
+out_dir <- "~/Code/beast2tpPipeline_example/BEAST2/mcctree"
+invisible(parallel::mclapply(seq_along(trees_files), function(i) {
+  get_mcctree(input_treesfile = trees_files[i], output_dir = out_dir)
+}, mc.cores = cores))
+```
+
+```{r run_transphylo}
+# Read the trees and manipulate the names to make sure they match the names in cluster_assignments
+mcc_trees_files <- list.files(out_dir, pattern = ".tree", full.names = TRUE)
+mcc_trees <- lapply(mcc_trees_files, ape::read.nexus)
+names(mcc_trees) <- gsub(".nexus", "", basename(mcc_trees_files))
+names(mcc_trees) <- gsub(".*-", "", names(mcc_trees))
+# Run TransPhylo on the MCC trees
+#prob_source <- run_TransPhylo(mcc_trees,
+#                              type = "mcctrees",
+#                              cluster_dict = cluster_assignments,
+#                              out_dir = "~/Code/beast2tpPipeline_example/TransPhylo",
+#                              mcmc_iterations = 100)
+```
