@@ -54,6 +54,7 @@
 #' @param optiStart A numeric specifying type of optimization to apply to
 #' MCMC start point.
 #' @param verbose A logical specifying whether to print verbose output.
+#' @param delta_t The grid size for the MCMC. Smaller is better but slower.
 #' @param mcmc_iterations A numeric specifying the number of MCMC iterations.
 #' @param thinning A numeric specifying the thinning parameter for the MCMC.
 #'
@@ -89,6 +90,7 @@ run_TransPhylo <- function(trees,
                            update_pi = TRUE,
                            optiStart = 2,
                            verbose = FALSE,
+                           delta_t = 0.01,
                            mcmc_iterations = 100000,
                            thinning = 10) {
   # Force no sharing for trees_sample
@@ -110,7 +112,7 @@ run_TransPhylo <- function(trees,
   # Convert phylo (ape) -> ptree (TransPhylo)
   if (type == "mcctrees") {
     # Get the date of the last sample for each cluster
-    dates_last_sample <- aggregate(collectdt ~ cluster_name, data = cluster_assignments, max)
+    dates_last_sample <- aggregate(collectdt ~ cluster_name, data = cluster_dict, max)
     # Reorder dates last sample to match tree order
     dates_last_sample <- dates_last_sample[match(names(trees),
                                                  dates_last_sample$cluster_name),
@@ -151,12 +153,13 @@ run_TransPhylo <- function(trees,
                                                      updatePi = update_pi,
                                                      share = share,
                                                      optiStart = optiStart,
+                                                     delta_t,
                                                      dateT = date_last_sample + .01,
                                                      verbose = verbose)
 
   # Save resTransPhylo object(s)
-  if(!dir.exists(output_directory)) dir.create(output_directory)
-  saveRDS(tp_res, file = file.path(output_directory,
+  if(!dir.exists(out_dir)) dir.create(out_dir)
+  saveRDS(tp_res, file = file.path(out_dir,
                                    paste0(output_name, ".rds")))
 
   # Get prob source for all samples & save
@@ -181,5 +184,6 @@ run_TransPhylo <- function(trees,
   colnames(prob_source) <- c("SampleID", "prob_source")
   # And save the vector
   output_name <- paste0(output_name, "_prob_source.rds")
-  saveRDS(prob_source, file = file.path(output_directory, output_name))
+  saveRDS(prob_source, file = file.path(out_dir, output_name))
+  return(prob_source)
 }

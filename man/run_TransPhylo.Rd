@@ -28,6 +28,7 @@ run_TransPhylo(
   update_pi = TRUE,
   optiStart = 2,
   verbose = FALSE,
+  delta_t = 0.01,
   mcmc_iterations = 1e+05,
   thinning = 10
 )
@@ -102,6 +103,8 @@ parameter is ignored.}
 MCMC start point.}
 
 \item{verbose}{A logical specifying whether to print verbose output.}
+
+\item{delta_t}{The grid size for the MCMC. Smaller is better but slower.}
 
 \item{mcmc_iterations}{A numeric specifying the number of MCMC iterations.}
 

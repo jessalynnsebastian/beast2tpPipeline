@@ -181,10 +181,10 @@ snp_matrices <- unlist(snp_matrices, recursive = FALSE)
 cluster_assignments <- do.call(rbind, cluster_assignments)
 ``` 
 
-```{r write_xml}
+```{r write_xml, eval = F}
 # For each cluster, create an xml file for BEAST2
 invisible(lapply(names(snp_matrices), function(cluster_name) {
-  create_cluster_xml(snps = snp_matrices[[cluster_name]],
+  create_cluster_xml(seqs = snp_matrices[[cluster_name]],
                      cluster_name = cluster_name,
                      sampling_dates = setNames(cluster_assignments$collectdt[cluster_assignments$cluster_name == cluster_name],
                                                cluster_assignments$sample_id[cluster_assignments$cluster_name == cluster_name]),
@@ -193,8 +193,8 @@ invisible(lapply(names(snp_matrices), function(cluster_name) {
 
 ```
 
-```{r run beast2}
-cores <- parallel::detectCores() / 2
+```{r run beast2, eval = F}
+cores <- parallel::detectCores()/2
 input_xml <- list.files("~/Code/beast2tpPipeline_example/BEAST2", pattern = "\\.xml", full.names = TRUE)
 invisible(parallel::mclapply(input_xml, run_beast2, mc.cores = cores))
 ```
@@ -206,7 +206,7 @@ invisible(sapply(beast_logs, function(log) {
 }))
 ```
 
-```{r get_mcc_trees}
+```{r get_mcc_trees, eval = F}
 trees_files <- list.files("~/Code/beast2tpPipeline_example/BEAST2", pattern = ".trees", full.names = TRUE)
 out_dir <- "~/Code/beast2tpPipeline_example/BEAST2/mcctree"
 invisible(parallel::mclapply(seq_along(trees_files), function(i) {
@@ -214,16 +214,34 @@ invisible(parallel::mclapply(seq_along(trees_files), function(i) {
 }, mc.cores = cores))
 ```
 
-```{r run_transphylo}
+```{r run_transphylo, eval = F}
 # Read the trees and manipulate the names to make sure they match the names in cluster_assignments
 mcc_trees_files <- list.files(out_dir, pattern = ".tree", full.names = TRUE)
 mcc_trees <- lapply(mcc_trees_files, ape::read.nexus)
 names(mcc_trees) <- gsub(".nexus", "", basename(mcc_trees_files))
 names(mcc_trees) <- gsub(".*-", "", names(mcc_trees))
 # Run TransPhylo on the MCC trees
-#prob_source <- run_TransPhylo(mcc_trees,
-#                              type = "mcctrees",
-#                              cluster_dict = cluster_assignments,
-#                              out_dir = "~/Code/beast2tpPipeline_example/TransPhylo",
-#                              mcmc_iterations = 100)
+debugonce(run_TransPhylo)
+prob_source <- run_TransPhylo(mcc_trees,
+                              type = "mcctrees",
+                              cluster_dict = cluster_assignments,
+                              out_dir = "~/Code/beast2tpPipeline_example/TransPhylo",
+                              mcmc_iterations = 100,
+                              verbose = TRUE)
+```
+
+```{r, get_probs, include = F}
+prob_source <- readRDS("~/Code/beast2tpPipeline_example/TransPhylo/tp_res_prob_source.rds")
+```
+
+```{r regression}
+# Get dataframe with covariates for regression
+cleaned_data <- metadata[, c("SampleID", "hivfinal_new")]
+cleaned_data <- cleaned_data[complete.cases(cleaned_data), ]
+cleaned_data$hivfinal_new <- as.factor(cleaned_data$hivfinal_new - 1)
+# Run a linear model with the probabilities from TransPhylo
+mdl <- regression(method = "linear",
+                  cleaned_data = cleaned_data,
+                  prob_source = prob_source)
+summary(mdl)
 ```

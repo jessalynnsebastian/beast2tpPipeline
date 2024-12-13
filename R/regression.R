@@ -9,7 +9,8 @@
 #' Can be "linear" or "logistic".
 #' @param cleaned_data A data frame containing the covariates to use in the
 #' regression. Must contain a column "SampleID" with the sample IDs.
-#' @param prob_source A vector of probabilities output by TransPhylo, indicating
+#' @param prob_source A data frame of probabilities output by TransPhylo with columns
+#' `SampleID` and `prob_source` (as output by `run_TransPhylo`), indicating
 #' the probability of each sample being the infection source.
 #' @param prob_cutoff A numeric specifying the probability cutoff to use for
 #' logistic regression. If NULL, logistic regression will not be run.

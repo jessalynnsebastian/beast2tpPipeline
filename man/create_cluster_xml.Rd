@@ -7,7 +7,7 @@
 create_cluster_xml(
   path_to_template = system.file("xml_template/0_xml_template.xml", package =
     "beast2tpPipeline"),
-  snps,
+  seqs,
   cluster_name,
   sampling_dates,
   mcmc_iterations = 1e+07,
@@ -21,6 +21,9 @@ create_cluster_xml(
 }
 \arguments{
 \item{path_to_template}{The path to the template XML file.}
+
+\item{seqs}{A matrix of DNA sequences (or SNPs), where rownames correspond
+to sample IDs, or an \code{ape::DNAbin} object.}
 
 \item{cluster_name}{The name of the cluster.}
 
@@ -46,9 +49,6 @@ to adjust the clock rate for SNPs. Defaults to TB length.}
 
 \item{out_dir}{The directory to write the output XML file. Files
 are automatically named after their FASTA names.}
-
-\item{seqs}{A matrix of DNA sequences (or SNPs), where rownames correspond
-to sample IDs, or an \code{ape::DNAbin} object.}
 }
 \description{
 Use a template XML file to create new XML files for BEAST2 input.

@@ -52,7 +52,7 @@
 
 create_cluster_xml <- function(path_to_template = system.file("xml_template/0_xml_template.xml",
                                                               package = "beast2tpPipeline"),
-                               snps,
+                               seqs,
                                cluster_name,
                                sampling_dates,
                                mcmc_iterations = 10000000,
@@ -71,7 +71,7 @@ create_cluster_xml <- function(path_to_template = system.file("xml_template/0_xm
   if (!file.exists(path_to_template)) {
     stop("Template XML file not found.")
   }
-  if (is.null(snps)) {
+  if (is.null(seqs)) {
     stop("Please provide SNP data.")
   }
   if (is.null(cluster_name)) {
@@ -85,28 +85,28 @@ create_cluster_xml <- function(path_to_template = system.file("xml_template/0_xm
   new_xml <- gsub("SNP_FILE_NAME_HERE", cluster_name, xml_template)
 
   # Replace the SNP data
-  if (!is.matrix(snps)) {
-    if (class(snps) == "DNAbin") {
-      snps_matrix <- ape::as.character.DNAbin(snps)
+  if (!is.matrix(seqs)) {
+    if (inherits(seqs, "DNAbin")) {
+      seqs_matrix <- ape::as.character.DNAbin(seqs)
     } else {
-      stop("SNPs not in correct format. Make sure you are reading
+      stop("seqs not in correct format. Make sure you are reading
           sequences in with ape::read.dna([FILE], format = 'fasta',
           as.character = TRUE).")
     }
   } else {
-    snps_matrix <- snps
+    seqs_matrix <- seqs
   }
-  snp_length <- ncol(snps_matrix) - 4 # subtract 4 for the constant sites
+  snp_length <- ncol(seqs_matrix) - 4 # subtract 4 for the constant sites
   sequence_string <- '<sequence id="seq_SEQUENCE_NAME" spec="Sequence" taxon="SEQUENCE_NAME" totalcount="4" value="SNP_SEQUENCE"/>'
   # Note that SNP_SEQUENCE needs to contain the 4 const sites, acgt
-  for (i in seq_len(nrow(snps_matrix))) {
+  for (i in seq_len(nrow(seqs_matrix))) {
     insert_string <- gsub("SEQUENCE_NAME",
-                          rownames(snps_matrix)[i],
+                          rownames(seqs_matrix)[i],
                           sequence_string)
     insert_string <- gsub("SNP_SEQUENCE",
-                          paste(snps_matrix[i, ], collapse = ""),
+                          paste(seqs_matrix[i, ], collapse = ""),
                           insert_string)
-    if (i != nrow(snps_matrix)) {
+    if (i != nrow(seqs_matrix)) {
       insert_string <- paste(insert_string,
                              "\n\t\tALIGNMENT_INFORMATION_HERE",
                              sep = "")

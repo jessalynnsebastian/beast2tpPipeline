@@ -43,7 +43,7 @@ create_BEAST2_clusters <- function(seqs,
                                    fasta_dir = NULL) {
   # Check that sequences are in correct format
   if (!is.matrix(seqs)) {
-    if (class(seqs) == "DNAbin") {
+    if (inherits(seqs, "DNAbin")) {
       seqs <- ape::as.character.DNAbin(seqs)
     } else {
       stop("Sequences not in correct format. Make sure you are reading

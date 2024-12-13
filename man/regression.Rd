@@ -18,7 +18,8 @@ Can be "linear" or "logistic".}
 \item{cleaned_data}{A data frame containing the covariates to use in the
 regression. Must contain a column "SampleID" with the sample IDs.}
 
-\item{prob_source}{A vector of probabilities output by TransPhylo, indicating
+\item{prob_source}{A data frame of probabilities output by TransPhylo with columns
+\code{SampleID} and \code{prob_source} (as output by \code{run_TransPhylo}), indicating
 the probability of each sample being the infection source.}
 
 \item{prob_cutoff}{A numeric specifying the probability cutoff to use for
