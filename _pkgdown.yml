@@ -13,7 +13,5 @@ navbar:
         href: articles/index.html
     right:
       - icon: fa-github
-        href: https://github.com/jessalynnsebastian/beast2tpPipelineurl: https://jessalynnsebastian.github.io/beast2tpPipeline/
-template:
-  bootstrap: 5
+        href: https://github.com/jessalynnsebastian/beast2tpPipeline
 
