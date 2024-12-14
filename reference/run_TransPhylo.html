@@ -60,26 +60,7 @@ cluster, to incorporate some phylogenetic uncertainty).</p>
 <span>  <span class="va">cluster_dict</span>,</span>
 <span>  out_dir <span class="op">=</span> <span class="st">"TransPhylo"</span>,</span>
 <span>  output_name <span class="op">=</span> <span class="st">"tp_res"</span>,</span>
-<span>  gentime_shape <span class="op">=</span> <span class="fl">10</span>,</span>
-<span>  gentime_scale <span class="op">=</span> <span class="fl">1</span><span class="op">/</span><span class="fl">10</span>,</span>
-<span>  sampling_shape <span class="op">=</span> <span class="fl">10</span>,</span>
-<span>  sampling_scale <span class="op">=</span> <span class="fl">1</span><span class="op">/</span><span class="fl">10</span>,</span>
-<span>  prior_sampfrac_a <span class="op">=</span> <span class="fl">1</span>,</span>
-<span>  prior_sampfrac_b <span class="op">=</span> <span class="fl">19</span>,</span>
-<span>  start_off_p <span class="op">=</span> <span class="fl">0.5</span>,</span>
-<span>  start_neg <span class="op">=</span> <span class="fl">1.48</span>,</span>
-<span>  start_pi <span class="op">=</span> <span class="fl">0.5</span>,</span>
-<span>  start_off_r <span class="op">=</span> <span class="fl">1</span>,</span>
-<span>  share <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"neg"</span>, <span class="st">"off.r"</span><span class="op">)</span>,</span>
-<span>  update_neg <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  update_off_r <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  update_off_p <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  update_pi <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  optiStart <span class="op">=</span> <span class="fl">2</span>,</span>
-<span>  verbose <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  delta_t <span class="op">=</span> <span class="fl">0.01</span>,</span>
-<span>  mcmc_iterations <span class="op">=</span> <span class="fl">1e+05</span>,</span>
-<span>  thinning <span class="op">=</span> <span class="fl">10</span></span>
+<span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -126,93 +107,9 @@ the TransPhylo results will be saved.</p></dd>
 file.</p></dd>
 
 
-<dt id="arg-gentime-shape">gentime_shape<a class="anchor" aria-label="anchor" href="#arg-gentime-shape"></a></dt>
-<dd><p>A numeric specifying the shape parameter of the gamma
-distribution for the generation time.</p></dd>
-
-
-<dt id="arg-gentime-scale">gentime_scale<a class="anchor" aria-label="anchor" href="#arg-gentime-scale"></a></dt>
-<dd><p>A numeric specifying the scale parameter of the gamma
-distribution for the generation time.</p></dd>
-
-
-<dt id="arg-sampling-shape">sampling_shape<a class="anchor" aria-label="anchor" href="#arg-sampling-shape"></a></dt>
-<dd><p>A numeric specifying the shape parameter of the gamma
-distribution for the sampling time. Default is the same as <code>gentime_shape</code>.</p></dd>
-
-
-<dt id="arg-sampling-scale">sampling_scale<a class="anchor" aria-label="anchor" href="#arg-sampling-scale"></a></dt>
-<dd><p>A numeric specifying the scale parameter of the gamma
-distribution for the sampling time. Default is the same as <code>gentime_scale</code>.</p></dd>
-
-
-<dt id="arg-prior-sampfrac-a">prior_sampfrac_a<a class="anchor" aria-label="anchor" href="#arg-prior-sampfrac-a"></a></dt>
-<dd><p>A numeric specifying the first shape parameter of the beta
-distribution for the sampling fraction.</p></dd>
-
-
-<dt id="arg-prior-sampfrac-b">prior_sampfrac_b<a class="anchor" aria-label="anchor" href="#arg-prior-sampfrac-b"></a></dt>
-<dd><p>A numeric specifying the second shape parameter of the beta
-distribution for the sampling fraction.</p></dd>
-
-
-<dt id="arg-start-off-p">start_off_p<a class="anchor" aria-label="anchor" href="#arg-start-off-p"></a></dt>
-<dd><p>A numeric specifying the starting value for the off.p parameter.</p></dd>
-
-
-<dt id="arg-start-neg">start_neg<a class="anchor" aria-label="anchor" href="#arg-start-neg"></a></dt>
-<dd><p>A numeric specifying the starting value for the neg parameter.</p></dd>
-
-
-<dt id="arg-start-pi">start_pi<a class="anchor" aria-label="anchor" href="#arg-start-pi"></a></dt>
-<dd><p>A numeric specifying the starting value for the pi parameter.</p></dd>
-
-
-<dt id="arg-start-off-r">start_off_r<a class="anchor" aria-label="anchor" href="#arg-start-off-r"></a></dt>
-<dd><p>A numeric specifying the starting value for the off.r parameter.</p></dd>
-
-
-<dt id="arg-share">share<a class="anchor" aria-label="anchor" href="#arg-share"></a></dt>
-<dd><p>A character vector specifying which parameters to share across
-clusters. Defaults to "neg" and "off.r". If <code>type</code> is "trees_sample", this
-parameter is ignored.</p></dd>
-
-
-<dt id="arg-update-neg">update_neg<a class="anchor" aria-label="anchor" href="#arg-update-neg"></a></dt>
-<dd><p>A logical specifying whether to update the neg parameter.</p></dd>
-
-
-<dt id="arg-update-off-r">update_off_r<a class="anchor" aria-label="anchor" href="#arg-update-off-r"></a></dt>
-<dd><p>A logical specifying whether to update the off.r parameter.</p></dd>
-
-
-<dt id="arg-update-off-p">update_off_p<a class="anchor" aria-label="anchor" href="#arg-update-off-p"></a></dt>
-<dd><p>A logical specifying whether to update the off.p parameter.</p></dd>
-
-
-<dt id="arg-update-pi">update_pi<a class="anchor" aria-label="anchor" href="#arg-update-pi"></a></dt>
-<dd><p>A logical specifying whether to update the pi parameter.</p></dd>
-
-
-<dt id="arg-optistart">optiStart<a class="anchor" aria-label="anchor" href="#arg-optistart"></a></dt>
-<dd><p>A numeric specifying type of optimization to apply to
-MCMC start point.</p></dd>
-
-
-<dt id="arg-verbose">verbose<a class="anchor" aria-label="anchor" href="#arg-verbose"></a></dt>
-<dd><p>A logical specifying whether to print verbose output.</p></dd>
-
-
-<dt id="arg-delta-t">delta_t<a class="anchor" aria-label="anchor" href="#arg-delta-t"></a></dt>
-<dd><p>The grid size for the MCMC. Smaller is better but slower.</p></dd>
-
-
-<dt id="arg-mcmc-iterations">mcmc_iterations<a class="anchor" aria-label="anchor" href="#arg-mcmc-iterations"></a></dt>
-<dd><p>A numeric specifying the number of MCMC iterations.</p></dd>
-
-
-<dt id="arg-thinning">thinning<a class="anchor" aria-label="anchor" href="#arg-thinning"></a></dt>
-<dd><p>A numeric specifying the thinning parameter for the MCMC.</p></dd>
+<dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
+<dd><p>Additional arguments to be passed to
+<code><a href="https://rdrr.io/pkg/TransPhylo/man/infer_multittree_share_param.html" class="external-link">TransPhylo::infer_multittree_share_param</a></code>.</p></dd>
 
 </dl></div>
     <div class="section level2">

@@ -50,8 +50,47 @@
   </div>
 </nav><div class="container template-home">
 <div class="row">
-  <main id="main" class="col-md-9">
-Given fasta files and corresponding metadata, this package goes through the process of splitting fasta files into SNP clusters, creating an XML file for BEAST2 (constrained to a particular model - use BEAUti otherwise), running BEAST2, running TransPhylo, and then doing some kind of regression with the TransPhylo results. This package was developed with the specific application of the Kopanyo project with TB data, so some of it is highly specific and not very transferable.
+  <main id="main" class="col-md-9"><div class="section level1">
+<div class="page-header"><h1 id="beast2tppipeline-package">beast2tpPipeline Package<a class="anchor" aria-label="anchor" href="#beast2tppipeline-package"></a>
+</h1></div>
+<div class="section level2">
+<h2 id="introduction">Introduction<a class="anchor" aria-label="anchor" href="#introduction"></a>
+</h2>
+<p>This package was created to work with data from the Kopanyo study, namely fasta files of TB sequences and associated metadata.</p>
+<p>This package is built such that each step in the pipeline has an associated function. The steps and functions are:</p>
+<ol style="list-style-type: decimal">
+<li>
+<strong>Assigning SNP clusters</strong>: <code>assign_snp_clusters</code> takes a set of sequences and metadata, and assigns sequences to SNP clusters.</li>
+<li>
+<strong>Creating BEAST2 clusters</strong>: <code>create_BEAST2_clusters</code> takes the SNP clusters and separates the sequence data by cluster, keeping only the SNPs.</li>
+<li>
+<strong>Creating XML files for BEAST2</strong>: <code>create_cluster_xml</code> takes the SNP data and creates an XML file for BEAST2 to run.</li>
+<li>
+<strong>Running BEAST2</strong>: <code>run_beast2</code> runs BEAST2 on the XML file. This is where we take the DNA sequences and infer a timed phylogenetic tree, which tells us about the ancestry of the pathogen.</li>
+<li>
+<strong>Getting the MCC trees</strong>: <code>get_mcctree</code> takes the posterior trees from BEAST2 and creates a maximum clade credibility tree - a summary tree, like a mean or median. (Alternatively, <strong>Getting a Sample of Posterior Trees</strong>: <code>sample_BEAST2_trees</code> takes the posterior trees from BEAST2 and subsamples a specified number of them.)</li>
+<li>
+<strong>Running TransPhylo on the MCC trees</strong>: <code>run_TransPhylo</code> runs TransPhylo on the MCC trees, sharing some parameters that can be simultaneously estimated. This is where we take the timed phylogeny and use it to try to infer who-infected-whom. (Alternatively, you can use <code>run_TransPhylo</code> to run TransPhylo on a subsample of BEAST2 trees, without parameter sharing.)</li>
+<li>
+<strong>Running a regression on the TransPhylo results</strong>: <code>regression</code> runs linear or logistic regression using the TransPhylo results. This is where we draw inference about the relationship between some covariates and individual transmission probabilities.</li>
+</ol>
+</div>
+<div class="section level2">
+<h2 id="getting-started">Getting Started<a class="anchor" aria-label="anchor" href="#getting-started"></a>
+</h2>
+<p>To use this package, you will need to have some dependencies installed. You can install them with the following code:</p>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"ape"</span>, <span class="st">"TransPhylo"</span>, <span class="st">"coda"</span>, <span class="st">"tracerer"</span>, <span class="st">"lubridate"</span>, <span class="st">"tidyverse"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"JamesStimson/transcluster"</span>, build_vignettes <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+<p>You will also need to have BEAST2 installed on your computer. You can download it <a href="https://www.beast2.org/" class="external-link">here</a>. If you use a package manager like homebrew, you can install BEAST2 with <code>brew install beast2</code> in your terminal. This will install a suite of programs, including BEAST2, BEAUti, and TreeAnnotator. You will probably also want to install Tracer to look at traceplots and other diagnostics of your BEAST2 runs. You can download Tracer <a href="https://github.com/beast-dev/tracer/releases/tag/v1.7.2" class="external-link">here</a>.</p>
+<p>Next, install the <code>beast2tpPipeline</code> package from GitHub:</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"jessalynnsebastian/beast2tpPipeline"</span>, build_vignettes <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+<p>Then, load the package:</p>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://jessalynnsebastian.github.io/beast2tpPipeline/">beast2tpPipeline</a></span><span class="op">)</span></span></code></pre></div>
+</div>
+</div>
   </main><aside class="col-md-3"><div class="license">
 <h2 data-toc-skip>License</h2>
 <ul class="list-unstyled">
