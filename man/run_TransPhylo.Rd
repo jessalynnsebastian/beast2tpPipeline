@@ -11,26 +11,7 @@ run_TransPhylo(
   cluster_dict,
   out_dir = "TransPhylo",
   output_name = "tp_res",
-  gentime_shape = 10,
-  gentime_scale = 1/10,
-  sampling_shape = 10,
-  sampling_scale = 1/10,
-  prior_sampfrac_a = 1,
-  prior_sampfrac_b = 19,
-  start_off_p = 0.5,
-  start_neg = 1.48,
-  start_pi = 0.5,
-  start_off_r = 1,
-  share = c("neg", "off.r"),
-  update_neg = TRUE,
-  update_off_r = TRUE,
-  update_off_p = FALSE,
-  update_pi = TRUE,
-  optiStart = 2,
-  verbose = FALSE,
-  delta_t = 0.01,
-  mcmc_iterations = 1e+05,
-  thinning = 10
+  ...
 )
 }
 \arguments{
@@ -61,54 +42,8 @@ the TransPhylo results will be saved.}
 \item{output_name}{A character string specifying the name of the output
 file.}
 
-\item{gentime_shape}{A numeric specifying the shape parameter of the gamma
-distribution for the generation time.}
-
-\item{gentime_scale}{A numeric specifying the scale parameter of the gamma
-distribution for the generation time.}
-
-\item{sampling_shape}{A numeric specifying the shape parameter of the gamma
-distribution for the sampling time. Default is the same as \code{gentime_shape}.}
-
-\item{sampling_scale}{A numeric specifying the scale parameter of the gamma
-distribution for the sampling time. Default is the same as \code{gentime_scale}.}
-
-\item{prior_sampfrac_a}{A numeric specifying the first shape parameter of the beta
-distribution for the sampling fraction.}
-
-\item{prior_sampfrac_b}{A numeric specifying the second shape parameter of the beta
-distribution for the sampling fraction.}
-
-\item{start_off_p}{A numeric specifying the starting value for the off.p parameter.}
-
-\item{start_neg}{A numeric specifying the starting value for the neg parameter.}
-
-\item{start_pi}{A numeric specifying the starting value for the pi parameter.}
-
-\item{start_off_r}{A numeric specifying the starting value for the off.r parameter.}
-
-\item{share}{A character vector specifying which parameters to share across
-clusters. Defaults to "neg" and "off.r". If \code{type} is "trees_sample", this
-parameter is ignored.}
-
-\item{update_neg}{A logical specifying whether to update the neg parameter.}
-
-\item{update_off_r}{A logical specifying whether to update the off.r parameter.}
-
-\item{update_off_p}{A logical specifying whether to update the off.p parameter.}
-
-\item{update_pi}{A logical specifying whether to update the pi parameter.}
-
-\item{optiStart}{A numeric specifying type of optimization to apply to
-MCMC start point.}
-
-\item{verbose}{A logical specifying whether to print verbose output.}
-
-\item{delta_t}{The grid size for the MCMC. Smaller is better but slower.}
-
-\item{mcmc_iterations}{A numeric specifying the number of MCMC iterations.}
-
-\item{thinning}{A numeric specifying the thinning parameter for the MCMC.}
+\item{...}{Additional arguments to be passed to
+\code{TransPhylo::infer_multittree_share_param}.}
 }
 \value{
 A data frame containing the probability of each sample being an
