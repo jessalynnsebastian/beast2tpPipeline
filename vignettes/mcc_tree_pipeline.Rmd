@@ -213,7 +213,6 @@ mcc_trees <- lapply(mcc_trees_files, ape::read.nexus)
 names(mcc_trees) <- gsub(".nexus", "", basename(mcc_trees_files))
 names(mcc_trees) <- gsub(".*-", "", names(mcc_trees))
 # Run TransPhylo on the MCC trees
-#debugonce(run_TransPhylo)
 prob_source <- run_TransPhylo(mcc_trees,
                               type = "mcctrees",
                               cluster_dict = cluster_assignments,

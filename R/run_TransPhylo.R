@@ -69,6 +69,10 @@ run_TransPhylo <- function(trees,
     }
   }
 
+  # Convert dates in the cluster dict to decimal dates
+  cluster_dict$collectdt <- as.Date(cluster_dict$collectdt)
+  cluster_dict$collectdt <- lubridate::decimal_date(cluster_dict$collectdt)
+
   # Convert phylo (ape) -> ptree (TransPhylo)
   if (type == "mcctrees") {
     # Get the date of the last sample for each cluster

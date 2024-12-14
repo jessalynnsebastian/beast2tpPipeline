@@ -2,3 +2,18 @@ url: https://jessalynnsebastian.github.io/beast2tpPipeline/
 template:
   bootstrap: 5
 
+navbar:
+  structure:
+    left:
+      - text: "Home"
+        href: index.html
+      - text: "Reference"
+        href: reference/index.html
+      - text: "Articles"
+        href: articles/index.html
+    right:
+      - icon: fa-github
+        href: https://github.com/jessalynnsebastian/beast2tpPipelineurl: https://jessalynnsebastian.github.io/beast2tpPipeline/
+template:
+  bootstrap: 5
+
