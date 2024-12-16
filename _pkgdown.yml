@@ -1,17 +1,16 @@
-url: https://jessalynnsebastian.github.io/beast2tpPipeline/
 template:
   bootstrap: 5
-
+  bootswatch: flatly
 navbar:
   structure:
-    left:
-      - text: "Home"
-        href: index.html
-      - text: "Reference"
-        href: reference/index.html
-      - text: "Articles"
-        href: articles/index.html
-    right:
-      - icon: fa-github
-        href: https://github.com/jessalynnsebastian/beast2tpPipeline
-
+    left: [home, reference, articles]
+    right: [search, github]
+  components:
+    github:
+      icon: fa-github
+      href: https://github.com/jessalynnsebastian/beast2tpPipeline
+      aria-label: GitHub
+    home:
+      icon: fa-home
+      href: index.html
+      aria-label: Home

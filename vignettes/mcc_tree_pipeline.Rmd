@@ -132,7 +132,10 @@ the SNPs.
 # For each lineage, use the cluster assignments to put the sequences
 # into clusters
 snp_matrices <- lapply(seq_along(tb_sequences), function(lineage_index) {
+  # Note that the TB sequences are in format matrix
   create_BEAST2_clusters(seqs = tb_sequences[[lineage_index]],
+                         # and snp_clusters is a named vector of cluster assignments,
+                         # where the names are the sample ids
                          snp_clusters = setNames(cluster_assignments[[lineage_index]]$cluster_name,
                                                  cluster_assignments[[lineage_index]]$sample_id),
                          min_cluster_size = 4,
@@ -153,10 +156,13 @@ For each cluster, we will create an xml file for BEAST2. In general, BEAUti is u
 model that should be mostly the same across all clusters. For the TB data, this package comes with a template xml and the function
 `create_cluster_xml` that will fill in the necessary information for each cluster. The model associated with this xml template:
 
-- Is a strict clock model
-- Uses an HKY substitution model
-- Uses a coalescent constant population tree prior
-- TODO: etc
+- Strict clock model
+- HKY substitution model
+- Coalescent constant population tree prior
+- Uniform clock rate prior, user-supplied bounds
+- (Default) Log-normal(1, 1.25) (w/ upper bound of 1) frequency parameter
+- (Default) Log-normal(1, 1.25) transition-transversion parameter for HKY (kappa)
+- (Default) Log-normal(1, 1.25) coalescent population size parameter
 
 
 
