@@ -1,20 +1,20 @@
 <urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
-<url><loc>https://jessalynnsebastian.github.io/beast2tpPipeline/404.html</loc></url>
-<url><loc>https://jessalynnsebastian.github.io/beast2tpPipeline/LICENSE-text.html</loc></url>
-<url><loc>https://jessalynnsebastian.github.io/beast2tpPipeline/LICENSE.html</loc></url>
-<url><loc>https://jessalynnsebastian.github.io/beast2tpPipeline/articles/index.html</loc></url>
-<url><loc>https://jessalynnsebastian.github.io/beast2tpPipeline/articles/mcc_tree_pipeline.html</loc></url>
-<url><loc>https://jessalynnsebastian.github.io/beast2tpPipeline/authors.html</loc></url>
-<url><loc>https://jessalynnsebastian.github.io/beast2tpPipeline/index.html</loc></url>
-<url><loc>https://jessalynnsebastian.github.io/beast2tpPipeline/reference/assign_snp_clusters.html</loc></url>
-<url><loc>https://jessalynnsebastian.github.io/beast2tpPipeline/reference/create_BEAST2_clusters.html</loc></url>
-<url><loc>https://jessalynnsebastian.github.io/beast2tpPipeline/reference/create_cluster_xml.html</loc></url>
-<url><loc>https://jessalynnsebastian.github.io/beast2tpPipeline/reference/ess_checks.html</loc></url>
-<url><loc>https://jessalynnsebastian.github.io/beast2tpPipeline/reference/get_mcctree.html</loc></url>
-<url><loc>https://jessalynnsebastian.github.io/beast2tpPipeline/reference/index.html</loc></url>
-<url><loc>https://jessalynnsebastian.github.io/beast2tpPipeline/reference/regression.html</loc></url>
-<url><loc>https://jessalynnsebastian.github.io/beast2tpPipeline/reference/run_TransPhylo.html</loc></url>
-<url><loc>https://jessalynnsebastian.github.io/beast2tpPipeline/reference/run_beast2.html</loc></url>
-<url><loc>https://jessalynnsebastian.github.io/beast2tpPipeline/reference/sample_BEAST2_trees.html</loc></url>
+<url><loc>/404.html</loc></url>
+<url><loc>/LICENSE-text.html</loc></url>
+<url><loc>/LICENSE.html</loc></url>
+<url><loc>/articles/index.html</loc></url>
+<url><loc>/articles/mcc_tree_pipeline.html</loc></url>
+<url><loc>/authors.html</loc></url>
+<url><loc>/index.html</loc></url>
+<url><loc>/reference/assign_snp_clusters.html</loc></url>
+<url><loc>/reference/create_BEAST2_clusters.html</loc></url>
+<url><loc>/reference/create_cluster_xml.html</loc></url>
+<url><loc>/reference/ess_checks.html</loc></url>
+<url><loc>/reference/get_mcctree.html</loc></url>
+<url><loc>/reference/index.html</loc></url>
+<url><loc>/reference/regression.html</loc></url>
+<url><loc>/reference/run_TransPhylo.html</loc></url>
+<url><loc>/reference/run_beast2.html</loc></url>
+<url><loc>/reference/sample_BEAST2_trees.html</loc></url>
 </urlset>
 

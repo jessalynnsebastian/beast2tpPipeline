@@ -16,7 +16,7 @@
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
 
-    <nav class="navbar navbar-expand-lg fixed-top bg-light" data-bs-theme="light" aria-label="Site navigation"><div class="container">
+    <nav class="navbar navbar-expand-lg fixed-top bg-primary" data-bs-theme="dark" aria-label="Site navigation"><div class="container">
 
     <a class="navbar-brand me-2" href="../index.html">beast2tpPipeline</a>
 
@@ -29,6 +29,7 @@
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto">
+<li class="nav-item"><a class="nav-link" href="../index.html" aria-label="Home"><span class="fa fa-home"></span></a></li>
 <li class="nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="active nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
@@ -41,6 +42,7 @@
 <li class="nav-item"><form class="form-inline" role="search">
  <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json">
 </form></li>
+<li class="nav-item"><a class="external-link nav-link" href="https://github.com/jessalynnsebastian/beast2tpPipeline" aria-label="GitHub"><span class="fa fa-github"></span></a></li>
       </ul>
 </div>
 
@@ -99,7 +101,7 @@ not possible.</li>
 <p>In this vignette, we will use this package to do (1).</p>
 <p>First, load the package with <code>library</code>.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://jessalynnsebastian.github.io/beast2tpPipeline/">beast2tpPipeline</a></span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://jessalynnsebastian.github.io/beast2tpPipeline/" class="external-link">beast2tpPipeline</a></span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="data-for-this-example">Data for this Example<a class="anchor" aria-label="anchor" href="#data-for-this-example"></a>
@@ -245,7 +247,10 @@ SNPs.</p>
 <code class="sourceCode R"><span><span class="co"># For each lineage, use the cluster assignments to put the sequences</span></span>
 <span><span class="co"># into clusters</span></span>
 <span><span class="va">snp_matrices</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_along</a></span><span class="op">(</span><span class="va">tb_sequences</span><span class="op">)</span>, <span class="kw">function</span><span class="op">(</span><span class="va">lineage_index</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="co"># Note that the TB sequences are in format matrix</span></span>
 <span>  <span class="fu"><a href="../reference/create_BEAST2_clusters.html">create_BEAST2_clusters</a></span><span class="op">(</span>seqs <span class="op">=</span> <span class="va">tb_sequences</span><span class="op">[[</span><span class="va">lineage_index</span><span class="op">]</span><span class="op">]</span>,</span>
+<span>                         <span class="co"># and snp_clusters is a named vector of cluster assignments,</span></span>
+<span>                         <span class="co"># where the names are the sample ids</span></span>
 <span>                         snp_clusters <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/setNames.html" class="external-link">setNames</a></span><span class="op">(</span><span class="va">cluster_assignments</span><span class="op">[[</span><span class="va">lineage_index</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">cluster_name</span>,</span>
 <span>                                                 <span class="va">cluster_assignments</span><span class="op">[[</span><span class="va">lineage_index</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">sample_id</span><span class="op">)</span>,</span>
 <span>                         min_cluster_size <span class="op">=</span> <span class="fl">4</span>,</span>
@@ -268,10 +273,16 @@ data, this package comes with a template xml and the function
 information for each cluster. The model associated with this xml
 template:</p>
 <ul>
-<li>Is a strict clock model</li>
-<li>Uses an HKY substitution model</li>
-<li>Uses a coalescent constant population tree prior</li>
-<li>TODO: etc</li>
+<li>Strict clock model</li>
+<li>HKY substitution model</li>
+<li>Coalescent constant population tree prior</li>
+<li>Uniform clock rate prior, user-supplied bounds</li>
+<li>(Default) Log-normal(1, 1.25) (w/ upper bound of 1) frequency
+parameter</li>
+<li>(Default) Log-normal(1, 1.25) transition-transversion parameter for
+HKY (kappa)</li>
+<li>(Default) Log-normal(1, 1.25) coalescent population size
+parameter</li>
 </ul>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># For each cluster, create an xml file for BEAST2</span></span>
@@ -317,7 +328,6 @@ template:</p>
 <span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">mcc_trees</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">gsub</a></span><span class="op">(</span><span class="st">".nexus"</span>, <span class="st">""</span>, <span class="fu"><a href="https://rdrr.io/r/base/basename.html" class="external-link">basename</a></span><span class="op">(</span><span class="va">mcc_trees_files</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">mcc_trees</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">gsub</a></span><span class="op">(</span><span class="st">".*-"</span>, <span class="st">""</span>, <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">mcc_trees</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co"># Run TransPhylo on the MCC trees</span></span>
-<span><span class="co">#debugonce(run_TransPhylo)</span></span>
 <span><span class="va">prob_source</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/run_TransPhylo.html">run_TransPhylo</a></span><span class="op">(</span><span class="va">mcc_trees</span>,</span>
 <span>                              type <span class="op">=</span> <span class="st">"mcctrees"</span>,</span>
 <span>                              cluster_dict <span class="op">=</span> <span class="va">cluster_assignments</span>,</span>
