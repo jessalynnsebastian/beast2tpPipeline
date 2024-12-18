@@ -33,7 +33,6 @@ ess_checks <- function(program = c("BEAST2", "TransPhylo"),
   } else if (program == "TransPhylo") {
     tp_res <- readRDS(path_to_mcmc_log)
     ess <- lapply(tp_res, function(res) {
-      class(res) <- "resTransPhylo"
       res <- TransPhylo::convertToCoda(res)
       coda::effectiveSize(res)
     })

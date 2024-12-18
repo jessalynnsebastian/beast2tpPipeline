@@ -6,8 +6,7 @@
 \usage{
 create_BEAST2_clusters(
   seqs,
-  snp_clusters,
-  collectdts = NULL,
+  cluster_assignments,
   min_cluster_size = 4,
   min_varsites = 8,
   snps_only = TRUE,
@@ -20,12 +19,9 @@ create_BEAST2_clusters(
 \item{seqs}{A matrix of DNA sequences, where rownames correspond
 to sample IDs, or an \code{ape::DNAbin} object.}
 
-\item{snp_clusters}{A named vector of SNP cluster assignments, where names
-correspond to sample IDs.}
-
-\item{collectdts}{A named vector of collection dates, where names correspond
-to sample IDs. Dates should be in the format "YYYY-MM-DD" or in decimal format.
-as.character = TRUE).}
+\item{cluster_assignments}{A data frame of cluster assignments, including
+at least \code{sample_id} and \code{cluster_name}, as output by \code{assign_snp_clusters}.
+Must also include \code{collectdt} if writing a cluster dictionary.}
 
 \item{min_cluster_size}{The number of samples required to keep a cluster.
 If the cluster is too small, discard it.}

@@ -25,7 +25,7 @@
 #'
 #' @export
 
-assign_snp_clusters <- function(seqs,
+assign_snp_clusters <- function(seqs = NULL,
                                 collectdts,
                                 snp_matrix = NULL,
                                 threshold = 5,

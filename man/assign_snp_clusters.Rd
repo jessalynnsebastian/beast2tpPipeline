@@ -5,7 +5,7 @@
 \title{Assign SNP Clusters to Samples}
 \usage{
 assign_snp_clusters(
-  seqs,
+  seqs = NULL,
   collectdts,
   snp_matrix = NULL,
   threshold = 5,

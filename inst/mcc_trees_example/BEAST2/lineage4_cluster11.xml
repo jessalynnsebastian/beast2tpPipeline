@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><beast beautitemplate='Standard' beautistatus='' namespace="beast.core:beast.evolution.alignment:beast.evolution.tree.coalescent:beast.core.util:beast.evolution.nuc:beast.evolution.operators:beast.evolution.sitemodel:beast.evolution.substitutionmodel:beast.base.evolution.alignment:beast.pkgmgmt:beast.base.core:beast.base.inference:beast.base.evolution.tree.coalescent:beast.pkgmgmt:beast.base.core:beast.base.inference.util:beast.evolution.nuc:beast.base.evolution.operator:beast.base.inference.operator:beast.base.evolution.sitemodel:beast.base.evolution.substitutionmodel:beast.base.evolution.likelihood" required="BEAST.base v2.7.7" version="2.7">
+
+    <data
+ascertained = "true"
+excludeto = "4"
+id="lineage4_cluster11"
+spec="Alignment"
+name="alignment">
+        <sequence id="seq_BTB-1018" spec="Sequence" taxon="BTB-1018" totalcount="4" value="acgtggccctcc"/>
+		<sequence id="seq_BTB-200" spec="Sequence" taxon="BTB-200" totalcount="4" value="acgtgttccttg"/>
+		<sequence id="seq_BTB-2096" spec="Sequence" taxon="BTB-2096" totalcount="4" value="acgtgttccttg"/>
+		<sequence id="seq_BTB-366" spec="Sequence" taxon="BTB-366" totalcount="4" value="acgtgttccctg"/>
+		<sequence id="seq_BTB-602" spec="Sequence" taxon="BTB-602" totalcount="4" value="acgtatttcttg"/>
+		<sequence id="seq_BTB-847" spec="Sequence" taxon="BTB-847" totalcount="4" value="acgtgttctttg"/>
+    </data>
+
+    <map name="Uniform" >beast.base.inference.distribution.Uniform</map>
+
+    <map name="Exponential" >beast.base.inference.distribution.Exponential</map>
+
+    <map name="LogNormal" >beast.base.inference.distribution.LogNormalDistributionModel</map>
+
+    <map name="Normal" >beast.base.inference.distribution.Normal</map>
+
+    <map name="Beta" >beast.base.inference.distribution.Beta</map>
+
+    <map name="Gamma" >beast.base.inference.distribution.Gamma</map>
+
+    <map name="LaplaceDistribution" >beast.base.inference.distribution.LaplaceDistribution</map>
+
+    <map name="prior" >beast.base.inference.distribution.Prior</map>
+
+    <map name="InverseGamma" >beast.base.inference.distribution.InverseGamma</map>
+
+    <map name="OneOnX" >beast.base.inference.distribution.OneOnX</map>
+
+    <run id="mcmc" spec="MCMC" chainLength="2e+07" storeEvery="5000">
+        <state id="state" spec="State" storeEvery="5000">
+            <tree id="Tree.t:lineage4_cluster11" spec="beast.base.evolution.tree.Tree" name="stateNode">
+                <trait id="dateTrait.t:lineage4_cluster11" spec="beast.base.evolution.tree.TraitSet" dateFormat="yyyy-M-dd" traitname="date" value="BTB-1018=2014-05-12,BTB-200=2013-02-01,BTB-2096=2016-02-24,BTB-366=2013-05-17,BTB-602=2013-10-16,BTB-847=2014-01-31">
+                    <taxa id="TaxonSet.lineage4_cluster11" spec="TaxonSet">
+                        <alignment idref="lineage4_cluster11"/>
+                    </taxa>
+                </trait>
+                <taxonset idref="TaxonSet.lineage4_cluster11"/>
+            </tree>
+            <parameter id="clockRate.c:lineage4_cluster11" spec="parameter.RealParameter" lower="0.0" name="stateNode">0.0525</parameter>
+            <parameter id="kappa.s:lineage4_cluster11" spec="parameter.RealParameter" lower="0.0" name="stateNode">2.0</parameter>
+            <parameter id="freqParameter.s:lineage4_cluster11" spec="parameter.RealParameter" dimension="4" lower="0.0" name="stateNode" upper="1.0">0.25</parameter>
+            <parameter id="popSize.t:lineage4_cluster11" spec="parameter.RealParameter" lower="0.0" name="stateNode">0.3</parameter>
+        </state>
+        <init id="RandomTree.t:lineage4_cluster11" spec="RandomTree" estimate="false" initial="@Tree.t:lineage4_cluster11" taxa="@lineage4_cluster11">
+            <populationModel id="ConstantPopulation0.t:lineage4_cluster11" spec="ConstantPopulation">
+                <parameter id="randomPopSize.t:lineage4_cluster11" spec="parameter.RealParameter" name="popSize">1.0</parameter>
+            </populationModel>
+        </init>
+        <distribution id="posterior" spec="CompoundDistribution">
+            <distribution id="prior" spec="CompoundDistribution">
+                <distribution id="CoalescentConstant.t:lineage4_cluster11" spec="Coalescent">
+                    <populationModel id="ConstantPopulation.t:lineage4_cluster11" spec="ConstantPopulation" popSize="@popSize.t:lineage4_cluster11"/>
+                    <treeIntervals id="TreeIntervals.t:lineage4_cluster11" spec="beast.base.evolution.tree.TreeIntervals" tree="@Tree.t:lineage4_cluster11"/>
+                </distribution>
+                <prior id="ClockPrior.c:lineage4_cluster11" name="distribution" x="@clockRate.c:lineage4_cluster11">
+                    <Uniform id="Uniform.0" lower="0.00525" name="distr" upper="0.2625"/>
+                </prior>
+                <prior id="FrequenciesPrior.s:lineage4_cluster11" name="distribution" x="@freqParameter.s:lineage4_cluster11">
+                    <LogNormal id="LogNormalDistributionModel.1" name="distr">
+                        <parameter id="RealParameter.4" spec="parameter.RealParameter" estimate="false" name="M">1.0</parameter>
+                        <parameter id="RealParameter.5" spec="parameter.RealParameter" estimate="false" lower="0.0" name="S" upper="5.0">1.25</parameter>
+                    </LogNormal>
+                </prior>
+                <prior id="KappaPrior.s:lineage4_cluster11" name="distribution" x="@kappa.s:lineage4_cluster11">
+                    <LogNormal id="LogNormalDistributionModel.0" name="distr">
+                        <parameter id="RealParameter.1" spec="parameter.RealParameter" estimate="false" name="M">1.0</parameter>
+                        <parameter id="RealParameter.2" spec="parameter.RealParameter" estimate="false" name="S">1.25</parameter>
+                    </LogNormal>
+                </prior>
+                <prior id="PopSizePrior.t:lineage4_cluster11" name="distribution" x="@popSize.t:lineage4_cluster11">
+                    <LogNormal id="LogNormalDistributionModel.2" name="distr">
+                        <parameter id="RealParameter.6" spec="parameter.RealParameter" estimate="false" name="M">1.0</parameter>
+                        <parameter id="RealParameter.7" spec="parameter.RealParameter" estimate="false" lower="0.0" name="S" upper="5.0">1.25</parameter>
+                    </LogNormal>
+                </prior>
+            </distribution>
+            <distribution id="likelihood" spec="CompoundDistribution" useThreads="true">
+                <distribution id="treeLikelihood.lineage4_cluster11" spec="ThreadedTreeLikelihood" data="@lineage4_cluster11" tree="@Tree.t:lineage4_cluster11">
+                    <siteModel id="SiteModel.s:lineage4_cluster11" spec="SiteModel">
+                        <parameter id="mutationRate.s:lineage4_cluster11" spec="parameter.RealParameter" estimate="false" lower="0.0" name="mutationRate">1.0</parameter>
+                        <parameter id="gammaShape.s:lineage4_cluster11" spec="parameter.RealParameter" estimate="false" name="shape">1.0</parameter>
+                        <parameter id="proportionInvariant.s:lineage4_cluster11" spec="parameter.RealParameter" estimate="false" lower="0.0" name="proportionInvariant" upper="1.0">0.0</parameter>
+                        <substModel id="hky.s:lineage4_cluster11" spec="HKY" kappa="@kappa.s:lineage4_cluster11">
+                            <frequencies id="estimatedFreqs.s:lineage4_cluster11" spec="Frequencies" frequencies="@freqParameter.s:lineage4_cluster11"/>
+                        </substModel>
+                    </siteModel>
+                    <branchRateModel id="StrictClock.c:lineage4_cluster11" spec="beast.base.evolution.branchratemodel.StrictClockModel" clock.rate="@clockRate.c:lineage4_cluster11"/>
+                </distribution>
+            </distribution>
+        </distribution>
+        <operator id="StrictClockRateScaler.c:lineage4_cluster11" spec="AdaptableOperatorSampler" weight="1.5">
+            <parameter idref="clockRate.c:lineage4_cluster11"/>
+            <operator id="AVMNOperator.lineage4_cluster11" spec="kernel.AdaptableVarianceMultivariateNormalOperator" allowNonsense="true" beta="0.05" burnin="400" initial="800" weight="0.1">
+                <transformations id="AVMNSumTransform.lineage4_cluster11" spec="operator.kernel.Transform$LogConstrainedSumTransform">
+                    <f idref="freqParameter.s:lineage4_cluster11"/>
+                </transformations>
+                <transformations id="AVMNLogTransform.lineage4_cluster11" spec="operator.kernel.Transform$LogTransform">
+                    <f idref="clockRate.c:lineage4_cluster11"/>
+                    <f idref="kappa.s:lineage4_cluster11"/>
+                </transformations>
+                <transformations id="AVMNNoTransform.lineage4_cluster11" spec="operator.kernel.Transform$NoTransform">
+                    <f idref="Tree.t:lineage4_cluster11"/>
+                </transformations>
+            </operator>
+            <operator id="StrictClockRateScalerX.c:lineage4_cluster11" spec="kernel.BactrianScaleOperator" parameter="@clockRate.c:lineage4_cluster11" upper="10.0" weight="3.0"/>
+        </operator>
+        <operator id="strictClockUpDownOperator.c:lineage4_cluster11" spec="AdaptableOperatorSampler" weight="1.5">
+            <parameter idref="clockRate.c:lineage4_cluster11"/>
+            <tree idref="Tree.t:lineage4_cluster11"/>
+            <operator idref="AVMNOperator.lineage4_cluster11"/>
+            <operator id="strictClockUpDownOperatorX.c:lineage4_cluster11" spec="operator.kernel.BactrianUpDownOperator" scaleFactor="0.75" weight="3.0">
+                <up idref="clockRate.c:lineage4_cluster11"/>
+                <down idref="Tree.t:lineage4_cluster11"/>
+            </operator>
+        </operator>
+        <operator id="KappaScaler.s:lineage4_cluster11" spec="AdaptableOperatorSampler" weight="0.05">
+            <parameter idref="kappa.s:lineage4_cluster11"/>
+            <operator idref="AVMNOperator.lineage4_cluster11"/>
+            <operator id="KappaScalerX.s:lineage4_cluster11" spec="kernel.BactrianScaleOperator" parameter="@kappa.s:lineage4_cluster11" scaleFactor="0.1" upper="10.0" weight="0.1"/>
+        </operator>
+        <operator id="FrequenciesExchanger.s:lineage4_cluster11" spec="AdaptableOperatorSampler" weight="0.05">
+            <parameter idref="freqParameter.s:lineage4_cluster11"/>
+            <operator idref="AVMNOperator.lineage4_cluster11"/>
+            <operator id="FrequenciesExchangerX.s:lineage4_cluster11" spec="operator.kernel.BactrianDeltaExchangeOperator" delta="0.01" weight="0.1">
+                <parameter idref="freqParameter.s:lineage4_cluster11"/>
+            </operator>
+        </operator>
+        <operator id="CoalescentConstantBICEPSEpochTop.t:lineage4_cluster11" spec="EpochFlexOperator" scaleFactor="0.1" tree="@Tree.t:lineage4_cluster11" weight="2.0"/>
+        <operator id="CoalescentConstantBICEPSEpochAll.t:lineage4_cluster11" spec="EpochFlexOperator" fromOldestTipOnly="false" scaleFactor="0.1" tree="@Tree.t:lineage4_cluster11" weight="2.0"/>
+        <operator id="CoalescentConstantBICEPSTreeFlex.t:lineage4_cluster11" spec="TreeStretchOperator" scaleFactor="0.01" tree="@Tree.t:lineage4_cluster11" weight="2.0"/>
+        <operator id="CoalescentConstantTreeRootScaler.t:lineage4_cluster11" spec="kernel.BactrianScaleOperator" rootOnly="true" scaleFactor="0.1" tree="@Tree.t:lineage4_cluster11" upper="10.0" weight="3.0"/>
+        <operator id="CoalescentConstantUniformOperator.t:lineage4_cluster11" spec="kernel.BactrianNodeOperator" tree="@Tree.t:lineage4_cluster11" weight="30.0"/>
+        <operator id="CoalescentConstantSubtreeSlide.t:lineage4_cluster11" spec="kernel.BactrianSubtreeSlide" tree="@Tree.t:lineage4_cluster11" weight="15.0"/>
+        <operator id="CoalescentConstantNarrow.t:lineage4_cluster11" spec="Exchange" tree="@Tree.t:lineage4_cluster11" weight="15.0"/>
+        <operator id="CoalescentConstantWide.t:lineage4_cluster11" spec="Exchange" isNarrow="false" tree="@Tree.t:lineage4_cluster11" weight="3.0"/>
+        <operator id="CoalescentConstantWilsonBalding.t:lineage4_cluster11" spec="WilsonBalding" tree="@Tree.t:lineage4_cluster11" weight="3.0"/>
+        <operator id="PopSizeScaler.t:lineage4_cluster11" spec="kernel.BactrianScaleOperator" parameter="@popSize.t:lineage4_cluster11" upper="10.0" weight="3.0"/>
+        <logger id="tracelog" spec="Logger" fileName="$(filebase).log" logEvery="1000" model="@posterior" sanitiseHeaders="true" sort="smart">
+            <log idref="posterior"/>
+            <log idref="likelihood"/>
+            <log idref="prior"/>
+            <log idref="treeLikelihood.lineage4_cluster11"/>
+            <log id="TreeHeight.t:lineage4_cluster11" spec="beast.base.evolution.tree.TreeStatLogger" tree="@Tree.t:lineage4_cluster11"/>
+            <log idref="clockRate.c:lineage4_cluster11"/>
+            <log idref="kappa.s:lineage4_cluster11"/>
+            <log idref="freqParameter.s:lineage4_cluster11"/>
+            <log idref="popSize.t:lineage4_cluster11"/>
+            <log idref="CoalescentConstant.t:lineage4_cluster11"/>
+        </logger>
+        <logger id="screenlog" spec="Logger" logEvery="1000">
+            <log idref="posterior"/>
+            <log idref="likelihood"/>
+            <log idref="prior"/>
+        </logger>
+        <logger id="treelog.t:lineage4_cluster11" spec="Logger" fileName="$(filebase)-$(tree).trees" logEvery="1000" mode="tree">
+            <log id="TreeWithMetaDataLogger.t:lineage4_cluster11" spec="beast.base.evolution.TreeWithMetaDataLogger" tree="@Tree.t:lineage4_cluster11"/>
+        </logger>
+        <operatorschedule id="OperatorSchedule" spec="OperatorSchedule"/>
+    </run>
+
+</beast>

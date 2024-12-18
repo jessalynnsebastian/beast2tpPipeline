@@ -7,7 +7,7 @@
 get_mcctree(
   input_treesfile,
   output_dir,
-  beast_iterations = 1e+07,
+  beast_iterations = 2e+07,
   burnin_fraction = 1/2,
   heights = "CA",
   treeannotator_path = "/Applications/\\"BEAST 2.7.7\\"/bin/treeannotator"

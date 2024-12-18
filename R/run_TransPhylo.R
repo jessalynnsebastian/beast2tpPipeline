@@ -108,6 +108,12 @@ run_TransPhylo <- function(trees,
 
   # Save resTransPhylo object(s)
   if (!dir.exists(out_dir)) dir.create(out_dir)
+  # For multitree, TransPhylo forgets that it's supposed to be a
+  # list of resTransPhylo objects
+  tp_res <- lapply(tp_res, function(res) {
+    class(res) <- "resTransPhylo"
+    res
+  })
   saveRDS(tp_res, file = file.path(out_dir,
                                    paste0(output_name, ".rds")))
 

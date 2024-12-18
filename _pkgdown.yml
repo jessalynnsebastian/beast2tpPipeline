@@ -1,6 +1,7 @@
 template:
   bootstrap: 5
   bootswatch: flatly
+url: https://jessalynnsebastian.github.io/beast2tpPipeline/
 navbar:
   structure:
     left: [home, reference, articles]
@@ -14,3 +15,23 @@ navbar:
       icon: fa-home
       href: index.html
       aria-label: Home
+reference:
+- title: "Splitting Sequences into Clusters"
+  contents:
+  - assign_snp_clusters
+  - create_BEAST2_clusters
+- title: "Working with BEAST2 Programs"
+  contents:
+  - create_xml_files
+  - run_beast2
+  - get_mcctree
+- title: "Running TransPhylo on BEAST2 Output"
+  contents:
+  - sample_BEAST2_trees
+  - run_TransPhylo
+- title: "Regression with TransPhylo Output"
+  contents:
+  - regression
+- title: "MCMC Checks"
+  contents:
+  - ess_checks

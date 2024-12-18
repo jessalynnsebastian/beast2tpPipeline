@@ -45,9 +45,9 @@ run_beast2 <- function(input_xml_path,
 #'
 #' @export
 get_mcctree <- function(input_treesfile, output_dir,
-                        beast_iterations = 10000000,
+                        beast_iterations = 20000000,
                         burnin_fraction = 1 / 2,
-                        heights = "CA", 
+                        heights = "CA",
                         treeannotator_path = '/Applications/"BEAST 2.7.7"/bin/treeannotator') {
   # Get command as a character string
   out_name <- gsub(".trees", ".nexus", basename(input_treesfile))

@@ -34,7 +34,7 @@ name="alignment">
 
     <map name="OneOnX" >beast.base.inference.distribution.OneOnX</map>
 
-    <run id="mcmc" spec="MCMC" chainLength="1e+07" storeEvery="5000">
+    <run id="mcmc" spec="MCMC" chainLength="2e+07" storeEvery="5000">
         <state id="state" spec="State" storeEvery="5000">
             <tree id="Tree.t:lineage2_cluster3" spec="beast.base.evolution.tree.Tree" name="stateNode">
                 <trait id="dateTrait.t:lineage2_cluster3" spec="beast.base.evolution.tree.TraitSet" dateFormat="yyyy-M-dd" traitname="date" value="BTB-1025=2014-05-13,BTB-272=2013-03-20,BTB-513=2013-08-29,BTB-623=2013-10-23,BTB-719=2013-11-27,BTB-739=2013-12-05">

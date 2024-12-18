@@ -2,7 +2,7 @@
 
 export(assign_snp_clusters)
 export(create_BEAST2_clusters)
-export(create_cluster_xml)
+export(create_xml_files)
 export(ess_checks)
 export(get_mcctree)
 export(regression)
