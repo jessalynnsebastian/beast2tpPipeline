@@ -488,7 +488,7 @@ ess_checks("TransPhylo", transphylo_res, min_ess = 10)
 ```{r get_prob_source_changed_sampling_frac, echo = F}
 # Run a linear model with the new probabilities from TransPhylo
 prob_source <- readRDS(system.file("mcc_trees_example", "TransPhylo",
-                                   "tp_res_prob_source.rds",
+                                   "tp_res_changed_sampling_frac_prob_source.rds",
                                    package = "beast2tpPipeline"))
 ```
 

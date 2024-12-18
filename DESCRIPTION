@@ -8,8 +8,8 @@ Description: Given fasta files and corresponding metadata, this package
     creating an XML file for BEAST2 (constrained to a particular model - 
     use BEAUti otherwise), running BEAST2, running TransPhylo, and then 
     doing some kind of regression with the TransPhylo results. This package 
-    was developed with the specific application of the Kopanyo project with 
-    TB data, so some of it is highly specific and not very transferable.
+    was developed with the specific application of the Kopanyo project and
+    exploration of the qualities of the BEAST2-TransPhylo pipeline.
 License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
