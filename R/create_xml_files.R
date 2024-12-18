@@ -1,4 +1,4 @@
-#' @title Create BEAST2 XML Files
+#' @title Create BEAST2 XML Files from a Template
 #'
 #' @description
 #' Use a template XML file to create new XML files for BEAST2 input.

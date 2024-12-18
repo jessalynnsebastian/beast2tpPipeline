@@ -36,3 +36,8 @@ There are some dependencies that should be automatically downloaded. Then, load 
 ```r
 library(beast2tpPipeline)
 ```
+
+You will also need to have BEAST2 installed on your computer. You can download it [here](https://www.beast2.org/). If you use
+a package manager like homebrew, you can install BEAST2 with `brew install beast2` in your terminal. This will install a suite 
+of programs, including BEAST2, BEAUti, and TreeAnnotator. You will probably also want to install Tracer to look at traceplots
+and other diagnostics of your BEAST2 runs. You can download Tracer [here](https://github.com/beast-dev/tracer/releases/tag/v1.7.2).

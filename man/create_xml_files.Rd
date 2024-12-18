@@ -2,7 +2,7 @@
 % Please edit documentation in R/create_xml_files.R
 \name{create_xml_files}
 \alias{create_xml_files}
-\title{Create BEAST2 XML Files}
+\title{Create BEAST2 XML Files from a Template}
 \usage{
 create_xml_files(
   path_to_template = system.file("xml_template/0_xml_template.xml", package =

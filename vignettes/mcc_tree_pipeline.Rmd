@@ -1,5 +1,9 @@
 ---
 title: "Using the BEAST2 - TransPhylo Pipeline with Maximum Clade Credibility Trees"
+resource_files:
+  - images/consttree.svg
+  - images/medttree.svg
+  - images/example_traceplots.svg
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Using the BEAST2 - TransPhylo Pipeline with Maximum Clade Credibility Trees}
@@ -304,7 +308,7 @@ ggtree(beast, ladderize = FALSE) +
     axis.text = element_text(size = 14)) +
   xlab("Date") +
   scale_x_continuous(labels = function(x) floor(x + round(root_date, 2)), limits = c(-6, 7.5),
-                     breaks = seq(-6, 6, by = 1)) +
+                     breaks = seq(-6, 6, by = 2)) +
   ggtitle("Lineage 4, Cluster 376 MCC Tree")
 ```
 
@@ -348,7 +352,7 @@ prob_source <- run_TransPhylo(mcc_trees,
                               prior_pi_b = 19,
                               share = c("neg", "off.r"),
                               startNeg = 1.48,
-                              mcmcIterations = 100)
+                              mcmcIterations = 100000)
 ```
 
 This function outputs a data frame containing each sample ID and the probability of that sample being an infection source,
@@ -364,6 +368,10 @@ transphylo_res <- readRDS(transphylo_res_file)
 TransPhylo::plotTraces(transphylo_res[[1]])
 ```
 
+```{r include_traceplot_image, echo = F}
+knitr::include_graphics("images/example_traceplots.svg")
+```
+
 TransPhylo also provides methods of summarizing the posterior trees, and plotting the result. For example,
 we can get the "medoid" (extension of median) tree and plot it. Here, the phylogenetic tree is plotted
 with colors, where each color represents an individual and asterisks represent transmission events. In TransPhylo
@@ -374,6 +382,10 @@ medoid <- TransPhylo::medTTree(transphylo_res[[1]])
 TransPhylo::plotCTree(medoid)
 ```
 
+```{r include_medttree_image, echo = F}
+knitr::include_graphics("images/medttree.svg")
+```
+
 There is also a "consensus" tree, which is built by combining clades occurring in at least some fraction
 of the posterior samples. This tree will not necessarily be a tree that is in the posterior samples. It
 can be plotted with `plot`. In TransPhylo this object is called a `ttree`, or transmission tree.
@@ -381,6 +393,10 @@ can be plotted with `plot`. In TransPhylo this object is called a `ttree`, or tr
 ```{r plot_transphylo_consensus, eval = F}
 cons <- TransPhylo::consTTree(transphylo_res[[1]])
 plot(cons)
+```
+
+```{r include_consttree_image, echo = F}
+knitr::include_graphics("images/consttree.svg")
 ```
 
 # Regression with TransPhylo Results
@@ -449,7 +465,7 @@ do linear regression with those results, and compare them to the old results.
 # Using same MCC trees we have already read in
 prob_source <- run_TransPhylo(mcc_trees,
                               type = "mcctrees",
-                              cluster_dict = cluster_assignments,
+                              cluster_dict = all_cluster_assignments,
                               out_dir = system.file("mcc_trees_example",
                                                     "TransPhylo",
                                                     package = "beast2tpPipeline"),
@@ -460,19 +476,25 @@ prob_source <- run_TransPhylo(mcc_trees,
                               prior_pi_b = 74,
                               share = c("neg", "off.r"),
                               startNeg = 1.48,
-                              mcmcIterations = 100)
+                              mcmcIterations = 100000)
 
 # Check mixing again
 transphylo_res <- system.file("mcc_trees_example", "TransPhylo",
                               "tp_res_changed_sampling_frac.rds",
                               package = "beast2tpPipeline")
 ess_checks("TransPhylo", transphylo_res, min_ess = 10)
+```
 
+```{r get_prob_source_changed_sampling_frac, echo = F}
 # Run a linear model with the new probabilities from TransPhylo
 prob_source <- readRDS(system.file("mcc_trees_example", "TransPhylo",
                                    "tp_res_prob_source.rds",
                                    package = "beast2tpPipeline"))
-# Run a linear model with the probabilities from TransPhylo
+```
+
+Now we have the updated probabilities, and we can redo our linear (or logistic) regression with these new probabilities.
+
+```{r model_changed_sampling_frac}
 mdl_new <- regression(method = "linear",
                       cleaned_data = cleaned_data,
                       prob_source = prob_source)
