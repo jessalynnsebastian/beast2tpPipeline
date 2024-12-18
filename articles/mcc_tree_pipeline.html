@@ -101,7 +101,7 @@ not possible.</li>
 <p>In this vignette, we will use this package to do (1).</p>
 <p>First, load the package with <code>library</code>.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://jessalynnsebastian.github.io/beast2tpPipeline/" class="external-link">beast2tpPipeline</a></span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://jessalynnsebastian.github.io/beast2tpPipeline/">beast2tpPipeline</a></span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="data-for-this-example">Data for this Example<a class="anchor" aria-label="anchor" href="#data-for-this-example"></a>
@@ -181,19 +181,24 @@ latter is still available in the function.</p>
 <span>  <span class="va">dates</span></span>
 <span><span class="op">}</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># TODO: REMOVE THIS WHEN TESTING IS DONE.</span></span>
-<span><span class="va">tb_sequences</span> <span class="op">&lt;-</span> <span class="va">tb_sequences</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">]</span></span>
-<span><span class="va">collectdts</span> <span class="op">&lt;-</span> <span class="va">collectdts</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">]</span></span>
-<span></span>
 <span><span class="co"># Apply the function to each lineage of sequences</span></span>
 <span><span class="va">cluster_assignments</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/mapply.html" class="external-link">mapply</a></span><span class="op">(</span><span class="va">assign_snp_clusters</span>,</span>
+<span>                              <span class="co"># `seqs` is a matrix of sequences</span></span>
 <span>                              seqs <span class="op">=</span> <span class="va">tb_sequences</span>,</span>
+<span>                              <span class="co"># `collectdts` is a named list of vectors of collection dates</span></span>
+<span>                              <span class="co"># where the elements are collection dates and the names are sample IDs  </span></span>
 <span>                              collectdts <span class="op">=</span> <span class="va">collectdts</span>,</span>
 <span>                              threshold <span class="op">=</span> <span class="fl">5</span>,</span>
 <span>                              SIMPLIFY <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Creating SNP-based clusters</span></span>
 <span><span class="co">## Creating SNP-based clusters</span></span>
+<span><span class="co">## Creating SNP-based clusters</span></span>
 <span><span class="co">## Creating SNP-based clusters</span></span></code></pre>
+<p>Computing the distance matrix for large clusters can take time, so if
+you already have a distance matrix saved, you can pass it to
+<code>assign_snp_clusters</code> with the <code>dist_matrix</code>
+argument.</p>
+<p>Now we have:</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Rename clusters to include lineage</span></span>
 <span><span class="va">cluster_assignments</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_along</a></span><span class="op">(</span><span class="va">cluster_assignments</span><span class="op">)</span>, <span class="kw">function</span><span class="op">(</span><span class="va">i</span><span class="op">)</span> <span class="op">{</span></span>
@@ -228,43 +233,88 @@ latter is still available in the function.</p>
 <span><span class="co">## 3  BTB-1344 lineage3_cluster3 2014-11-11</span></span>
 <span><span class="co">## 4  BTB-1410 lineage3_cluster1 2014-12-10</span></span>
 <span><span class="co">## 5   BTB-155 lineage3_cluster1 2013-01-07</span></span>
-<span><span class="co">## 6  BTB-1698 lineage3_cluster1 2015-06-08</span></span></code></pre>
-<p>Computing the distance matrix for large clusters can take time, so if
-you already have a distance matrix saved, you can pass it to
-<code>assign_snp_clusters</code> with the <code>dist_matrix</code>
-argument.</p>
+<span><span class="co">## 6  BTB-1698 lineage3_cluster1 2015-06-08</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## [[4]]</span></span>
+<span><span class="co">##   sample_id      cluster_name  collectdt</span></span>
+<span><span class="co">## 1  BTB-1001 lineage4_cluster1 2014-04-28</span></span>
+<span><span class="co">## 2  BTB-1003 lineage4_cluster2 2014-04-25</span></span>
+<span><span class="co">## 3  BTB-1005 lineage4_cluster3 2014-04-30</span></span>
+<span><span class="co">## 4  BTB-1007 lineage4_cluster4 2014-05-02</span></span>
+<span><span class="co">## 5  BTB-1009 lineage4_cluster5 2014-05-05</span></span>
+<span><span class="co">## 6  BTB-1010 lineage4_cluster6 2014-05-05</span></span></code></pre>
 <p>Next, we will create the actual BEAST2 clusters using the
 <code>create_BEAST2_clusters</code> function. We will take the
-sequences, split them into separate objects, keep only the SNPs (sites
-that are the same across all sequences will not matter to BEAST2), and
-write them to fasta files to be used by BEAUti or by
-<code>create_cluster_xml</code>.</p>
+sequences, split them into separate objects, and keep only the SNPs
+(sites that are the same across all sequences will not matter to
+BEAST2).</p>
 <p>We will discard clusters with fewer than 4 sequences, and clusters
 with fewer than 8 SNPs. We also add constant sites to the sequences, to
-deal with ascertainment bias in BEAST2 since we are only keeping the
-SNPs.</p>
+deal with ascertainment bias in BEAST2 due to the fact that we are only
+keeping the SNPs.</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># For each lineage, use the cluster assignments to put the sequences</span></span>
 <span><span class="co"># into clusters</span></span>
 <span><span class="va">snp_matrices</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_along</a></span><span class="op">(</span><span class="va">tb_sequences</span><span class="op">)</span>, <span class="kw">function</span><span class="op">(</span><span class="va">lineage_index</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="co"># Note that the TB sequences are in format matrix</span></span>
-<span>  <span class="fu"><a href="../reference/create_BEAST2_clusters.html">create_BEAST2_clusters</a></span><span class="op">(</span>seqs <span class="op">=</span> <span class="va">tb_sequences</span><span class="op">[[</span><span class="va">lineage_index</span><span class="op">]</span><span class="op">]</span>,</span>
-<span>                         <span class="co"># and snp_clusters is a named vector of cluster assignments,</span></span>
-<span>                         <span class="co"># where the names are the sample ids</span></span>
-<span>                         snp_clusters <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/setNames.html" class="external-link">setNames</a></span><span class="op">(</span><span class="va">cluster_assignments</span><span class="op">[[</span><span class="va">lineage_index</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">cluster_name</span>,</span>
-<span>                                                 <span class="va">cluster_assignments</span><span class="op">[[</span><span class="va">lineage_index</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">sample_id</span><span class="op">)</span>,</span>
+<span>  <span class="co"># Pull the sequences and cluster assignments for this lineage</span></span>
+<span>  <span class="va">tb_seq_lineage</span> <span class="op">&lt;-</span> <span class="va">tb_sequences</span><span class="op">[[</span><span class="va">lineage_index</span><span class="op">]</span><span class="op">]</span></span>
+<span>  <span class="va">cluster_assignments_lineage</span> <span class="op">&lt;-</span> <span class="va">cluster_assignments</span><span class="op">[[</span><span class="va">lineage_index</span><span class="op">]</span><span class="op">]</span></span>
+<span>  <span class="fu"><a href="../reference/create_BEAST2_clusters.html">create_BEAST2_clusters</a></span><span class="op">(</span>seqs <span class="op">=</span> <span class="va">tb_seq_lineage</span>,</span>
+<span>                         cluster_assignments <span class="op">=</span> <span class="va">cluster_assignments_lineage</span>,</span>
 <span>                         min_cluster_size <span class="op">=</span> <span class="fl">4</span>,</span>
 <span>                         min_varsites <span class="op">=</span> <span class="fl">8</span>,</span>
 <span>                         snps_only <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>                         constant_sites <span class="op">=</span> <span class="st">"acgt"</span><span class="op">)</span></span>
 <span><span class="op">}</span><span class="op">)</span></span>
-<span><span class="co"># Now we have a list of 4 lineages, each containing a list of clusters</span></span>
-<span><span class="co"># (data frames) within that lineage</span></span>
-<span><span class="co"># Now that we won't be working with the fasta files themselves anymore,</span></span>
-<span><span class="co"># let's turn this list of lists into a list, and let's turn the list of</span></span>
-<span><span class="co"># cluster assignments into a data frame</span></span>
-<span><span class="va">snp_matrices</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/unlist.html" class="external-link">unlist</a></span><span class="op">(</span><span class="va">snp_matrices</span>, recursive <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
-<span><span class="va">cluster_assignments</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/do.call.html" class="external-link">do.call</a></span><span class="op">(</span><span class="va">rbind</span>, <span class="va">cluster_assignments</span><span class="op">)</span></span></code></pre></div>
+<span></span>
+<span><span class="co"># Take a look at the clusters from the first lineage</span></span>
+<span><span class="va">snp_matrices</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span></span></code></pre></div>
+<pre><code><span><span class="co">## $lineage1_cluster6</span></span>
+<span><span class="co">##          [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9] [,10] [,11] [,12] [,13]</span></span>
+<span><span class="co">## BTB-1139 "a"  "c"  "g"  "t"  "c"  "c"  "g"  "c"  "t"  "c"   "c"   "t"   "c"  </span></span>
+<span><span class="co">## BTB-1146 "a"  "c"  "g"  "t"  "a"  "t"  "g"  "c"  "t"  "t"   "t"   "t"   "c"  </span></span>
+<span><span class="co">## BTB-1705 "a"  "c"  "g"  "t"  "c"  "c"  "g"  "t"  "t"  "c"   "c"   "t"   "c"  </span></span>
+<span><span class="co">## BTB-175  "a"  "c"  "g"  "t"  "c"  "c"  "g"  "c"  "t"  "c"   "c"   "c"   "t"  </span></span>
+<span><span class="co">## BTB-1774 "a"  "c"  "g"  "t"  "c"  "c"  "c"  "c"  "t"  "c"   "c"   "c"   "t"  </span></span>
+<span><span class="co">## BTB-262  "a"  "c"  "g"  "t"  "c"  "c"  "g"  "c"  "t"  "c"   "c"   "t"   "c"  </span></span>
+<span><span class="co">## BTB-604  "a"  "c"  "g"  "t"  "c"  "c"  "g"  "c"  "c"  "c"   "c"   "t"   "c"  </span></span>
+<span><span class="co">##          [,14] [,15] [,16] [,17] [,18]</span></span>
+<span><span class="co">## BTB-1139 "g"   "g"   "c"   "c"   "g"  </span></span>
+<span><span class="co">## BTB-1146 "g"   "g"   "c"   "c"   "a"  </span></span>
+<span><span class="co">## BTB-1705 "g"   "g"   "c"   "t"   "g"  </span></span>
+<span><span class="co">## BTB-175  "a"   "t"   "t"   "c"   "g"  </span></span>
+<span><span class="co">## BTB-1774 "a"   "t"   "t"   "c"   "g"  </span></span>
+<span><span class="co">## BTB-262  "g"   "g"   "c"   "c"   "g"  </span></span>
+<span><span class="co">## BTB-604  "g"   "g"   "c"   "c"   "g"  </span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## $lineage1_cluster7</span></span>
+<span><span class="co">##          [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9] [,10] [,11] [,12] [,13]</span></span>
+<span><span class="co">## BTB-1332 "a"  "c"  "g"  "t"  "c"  "c"  "c"  "g"  "a"  "t"   "t"   "c"   "a"  </span></span>
+<span><span class="co">## BTB-1645 "a"  "c"  "g"  "t"  "t"  "a"  "c"  "t"  "a"  "t"   "t"   "c"   "g"  </span></span>
+<span><span class="co">## BTB-584  "a"  "c"  "g"  "t"  "c"  "c"  "c"  "g"  "a"  "t"   "t"   "g"   "a"  </span></span>
+<span><span class="co">## BTB-640  "a"  "c"  "g"  "t"  "c"  "c"  "c"  "g"  "g"  "c"   "t"   "c"   "g"  </span></span>
+<span><span class="co">## BTB-665  "a"  "c"  "g"  "t"  "c"  "c"  "g"  "g"  "a"  "t"   "a"   "c"   "a"  </span></span>
+<span><span class="co">##          [,14]</span></span>
+<span><span class="co">## BTB-1332 "g"  </span></span>
+<span><span class="co">## BTB-1645 "g"  </span></span>
+<span><span class="co">## BTB-584  "g"  </span></span>
+<span><span class="co">## BTB-640  "a"  </span></span>
+<span><span class="co">## BTB-665  "g"</span></span></code></pre>
+<p>The output of this function is a list of matrices, where each matrix
+is a cluster of sequences. We will use these to write into the xml file
+to run BEAST2. If you are not using the template xml file available with
+this package, you should save these sequences as fasta files to be
+loaded into BEAUti, which you can do by providing a
+<code>fasta_dir</code> argument to the above function.</p>
+<p>After running the above chunks, we have two objects:
+<code>cluster_assignments</code>, a list of lineages each containing a
+dataframe giving sample IDs, cluster names, and collection dates; and
+<code>snp_matrices</code>, a list of lineages each containing a list of
+matrices, where each matrix is a cluster of sequences.</p>
+</div>
+<div class="section level2">
+<h2 id="creating-xml-files-for-beast2">Creating XML Files for BEAST2<a class="anchor" aria-label="anchor" href="#creating-xml-files-for-beast2"></a>
+</h2>
 <p>For each cluster, we will create an xml file for BEAST2. In general,
 BEAUti is used to create xml files for BEAST2, but here we are using a
 model that should be mostly the same across all clusters. For the TB
@@ -277,38 +327,112 @@ template:</p>
 <li>HKY substitution model</li>
 <li>Coalescent constant population tree prior</li>
 <li>Uniform clock rate prior, user-supplied bounds</li>
-<li>(Default) Log-normal(1, 1.25) (w/ upper bound of 1) frequency
-parameter</li>
-<li>(Default) Log-normal(1, 1.25) transition-transversion parameter for
-HKY (kappa)</li>
-<li>(Default) Log-normal(1, 1.25) coalescent population size
-parameter</li>
+<li>Log-normal(1, 1.25) (w/ upper bound of 1) frequency parameter</li>
+<li>Log-normal(1, 1.25) transition-transversion parameter for HKY
+(kappa)</li>
+<li>Log-normal(1, 1.25) coalescent population size parameter</li>
 </ul>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># For each cluster, create an xml file for BEAST2</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/invisible.html" class="external-link">invisible</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">snp_matrices</span><span class="op">)</span>, <span class="kw">function</span><span class="op">(</span><span class="va">cluster_name</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="fu"><a href="../reference/create_cluster_xml.html">create_cluster_xml</a></span><span class="op">(</span>seqs <span class="op">=</span> <span class="va">snp_matrices</span><span class="op">[[</span><span class="va">cluster_name</span><span class="op">]</span><span class="op">]</span>,</span>
-<span>                     cluster_name <span class="op">=</span> <span class="va">cluster_name</span>,</span>
-<span>                     sampling_dates <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/setNames.html" class="external-link">setNames</a></span><span class="op">(</span><span class="va">cluster_assignments</span><span class="op">$</span><span class="va">collectdt</span><span class="op">[</span><span class="va">cluster_assignments</span><span class="op">$</span><span class="va">cluster_name</span> <span class="op">==</span> <span class="va">cluster_name</span><span class="op">]</span>,</span>
-<span>                                               <span class="va">cluster_assignments</span><span class="op">$</span><span class="va">sample_id</span><span class="op">[</span><span class="va">cluster_assignments</span><span class="op">$</span><span class="va">cluster_name</span> <span class="op">==</span> <span class="va">cluster_name</span><span class="op">]</span><span class="op">)</span>,</span>
-<span>                     out_dir <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"mcc_trees_example"</span>, <span class="st">"BEAST2"</span>,</span>
-<span>                                           package <span class="op">=</span> <span class="st">"beast2tpPipeline"</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="op">}</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<p>The function to create the xml files requires the sequences (SNPs,
+for us) for the cluster, the name of the cluster, the sampling dates for
+the sequences in the cluster, and a directory to output the xml files
+to.</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># TODO: make sure parallelizing works on windows</span></span>
-<span><span class="va">cores</span> <span class="op">&lt;-</span> <span class="fu">parallel</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/parallel/detectCores.html" class="external-link">detectCores</a></span><span class="op">(</span><span class="op">)</span> <span class="op">/</span> <span class="fl">2</span></span>
+<code class="sourceCode R"><span><span class="co"># For each lineage, write the xml files for all clusters</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/invisible.html" class="external-link">invisible</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_along</a></span><span class="op">(</span><span class="va">snp_matrices</span><span class="op">)</span>, <span class="kw">function</span><span class="op">(</span><span class="va">lineage_index</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="co"># Get list of clusters for the lineage</span></span>
+<span>  <span class="va">lineage_seqs</span> <span class="op">&lt;-</span> <span class="va">snp_matrices</span><span class="op">[[</span><span class="va">lineage_index</span><span class="op">]</span><span class="op">]</span></span>
+<span>  <span class="co"># Get cluster assignments data frame for the lineage</span></span>
+<span>  <span class="va">cluster_assignments_lineage</span> <span class="op">&lt;-</span> <span class="va">cluster_assignments</span><span class="op">[[</span><span class="va">lineage_index</span><span class="op">]</span><span class="op">]</span></span>
+<span>  <span class="fu"><a href="../reference/create_xml_files.html">create_xml_files</a></span><span class="op">(</span>seqs_list <span class="op">=</span> <span class="va">lineage_seqs</span>,</span>
+<span>                   cluster_assignments <span class="op">=</span> <span class="va">cluster_assignments_lineage</span>,</span>
+<span>                   out_dir <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"mcc_trees_example"</span>, <span class="st">"BEAST2"</span>,</span>
+<span>                                         package <span class="op">=</span> <span class="st">"beast2tpPipeline"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="op">}</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<p>The function above does not return anything, but it writes xml files
+to the directory specified in <code>out_dir</code>. Messages are printed
+when each xml file is written.</p>
+</div>
+<div class="section level2">
+<h2 id="running-beast2">Running BEAST2<a class="anchor" aria-label="anchor" href="#running-beast2"></a>
+</h2>
+<p>Next, we will run BEAST2 on the xml files we just created. We will
+use the <code>run_beast2</code> function, which calls command-line
+BEAST2 using <code>system</code>. You may need to change the
+<code>beast2_path</code> argument depending on which version of BEAST2
+you have installed and where it is installed to.</p>
+<p>Below I have parallelized the code using the <code>parallel</code>
+package. This is not necessary, but it can speed up the process if you
+have multiple cores available. Note that this will not work on Windows,
+but there are other ways to parallelize on Windows machines.</p>
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">cores</span> <span class="op">&lt;-</span> <span class="fu">parallel</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/parallel/detectCores.html" class="external-link">detectCores</a></span><span class="op">(</span><span class="op">)</span> <span class="op">/</span> <span class="fl">2</span></span>
 <span><span class="va">input_xml</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.files.html" class="external-link">list.files</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"mcc_trees_example"</span>, <span class="st">"BEAST2"</span>,</span>
 <span>                                    package <span class="op">=</span> <span class="st">"beast2tpPipeline"</span><span class="op">)</span>,</span>
 <span>                        pattern <span class="op">=</span> <span class="st">"\\.xml"</span>, full.names <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/invisible.html" class="external-link">invisible</a></span><span class="op">(</span><span class="fu">parallel</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/parallel/mclapply.html" class="external-link">mclapply</a></span><span class="op">(</span><span class="va">input_xml</span>, <span class="va">run_beast2</span>, mc.cores <span class="op">=</span> <span class="va">cores</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<p>After running BEAST2, for each cluster, we will have a log file and a
+tree file. The log file logs the MCMC sampling process, and the tree
+file contains the posterior trees. First, as a quick check for the
+mixing of the MCMC, we can make sure the effective sample size (ESS) is
+above 200 for all parameters. We can do this using the
+<code>ess_checks</code> function, which calls on the package
+<code>tracerer</code>.</p>
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">beast_logs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.files.html" class="external-link">list.files</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"mcc_trees_example"</span>, <span class="st">"BEAST2"</span>,</span>
 <span>                                     package <span class="op">=</span> <span class="st">"beast2tpPipeline"</span><span class="op">)</span>,</span>
 <span>                         pattern <span class="op">=</span> <span class="st">"\\.log"</span>, full.names <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/invisible.html" class="external-link">invisible</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">sapply</a></span><span class="op">(</span><span class="va">beast_logs</span>, <span class="kw">function</span><span class="op">(</span><span class="va">log</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="fu"><a href="../reference/ess_checks.html">ess_checks</a></span><span class="op">(</span><span class="st">"BEAST2"</span>, <span class="va">log</span>, min_ess <span class="op">=</span> <span class="fl">200</span><span class="op">)</span></span>
 <span><span class="op">}</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<pre><code><span><span class="co">## All ESS are above minimum threshold</span></span>
+<span><span class="co">## All ESS are above minimum threshold</span></span>
+<span><span class="co">## All ESS are above minimum threshold</span></span>
+<span><span class="co">## All ESS are above minimum threshold</span></span>
+<span><span class="co">## All ESS are above minimum threshold</span></span>
+<span><span class="co">## All ESS are above minimum threshold</span></span>
+<span><span class="co">## All ESS are above minimum threshold</span></span>
+<span><span class="co">## All ESS are above minimum threshold</span></span>
+<span><span class="co">## All ESS are above minimum threshold</span></span>
+<span><span class="co">## All ESS are above minimum threshold</span></span>
+<span><span class="co">## All ESS are above minimum threshold</span></span>
+<span><span class="co">## All ESS are above minimum threshold</span></span></code></pre>
+<pre><code><span><span class="co">## lineage4_cluster183.log:</span></span>
+<span><span class="co">## ESS is too low for 2 parameters</span></span></code></pre>
+<pre><code><span><span class="co">##  ESS: 117    ESS: 162</span></span></code></pre>
+<pre><code><span><span class="co">## All ESS are above minimum threshold</span></span>
+<span><span class="co">## All ESS are above minimum threshold</span></span>
+<span><span class="co">## All ESS are above minimum threshold</span></span>
+<span><span class="co">## All ESS are above minimum threshold</span></span>
+<span><span class="co">## All ESS are above minimum threshold</span></span>
+<span><span class="co">## All ESS are above minimum threshold</span></span>
+<span><span class="co">## All ESS are above minimum threshold</span></span>
+<span><span class="co">## All ESS are above minimum threshold</span></span>
+<span><span class="co">## All ESS are above minimum threshold</span></span>
+<span><span class="co">## All ESS are above minimum threshold</span></span>
+<span><span class="co">## All ESS are above minimum threshold</span></span>
+<span><span class="co">## All ESS are above minimum threshold</span></span>
+<span><span class="co">## All ESS are above minimum threshold</span></span>
+<span><span class="co">## All ESS are above minimum threshold</span></span>
+<span><span class="co">## All ESS are above minimum threshold</span></span>
+<span><span class="co">## All ESS are above minimum threshold</span></span>
+<span><span class="co">## All ESS are above minimum threshold</span></span>
+<span><span class="co">## All ESS are above minimum threshold</span></span></code></pre>
+<p>If the ESS is too low, you may want to consider re-running BEAST2
+with more iterations. Be sure also to look at traceplots of the MCMC
+run, which is easiest to do with <code>Tracer</code>.</p>
+</div>
+<div class="section level2">
+<h2 id="creating-maximum-clade-credibility-trees">Creating Maximum Clade Credibility Trees<a class="anchor" aria-label="anchor" href="#creating-maximum-clade-credibility-trees"></a>
+</h2>
+<p>Next, we will create a maximum clade credibility (MCC) tree from the
+posterior trees. The MCC tree is a single tree that attempts to
+summarize the posterior trees, like a mean or median when posterior
+samples are values from the real line. We will use the
+<code>get_mcctree</code> function for this. <code>get_mcctree</code>
+calls command-line TreeAnnotator from the BEAST2 suite, so you may need
+to change the <code>treeannotator_path</code> argument depending on
+where TreeAnnotator is installed.</p>
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">trees_files</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.files.html" class="external-link">list.files</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"mcc_trees_example"</span>, <span class="st">"BEAST2"</span>,</span>
 <span>                                      package <span class="op">=</span> <span class="st">"beast2tpPipeline"</span><span class="op">)</span>,</span>
 <span>                          pattern <span class="op">=</span> <span class="st">".trees"</span>, full.names <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
@@ -317,7 +441,30 @@ parameter</li>
 <span><span class="fu"><a href="https://rdrr.io/r/base/invisible.html" class="external-link">invisible</a></span><span class="op">(</span><span class="fu">parallel</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/parallel/mclapply.html" class="external-link">mclapply</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_along</a></span><span class="op">(</span><span class="va">trees_files</span><span class="op">)</span>, <span class="kw">function</span><span class="op">(</span><span class="va">i</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="fu"><a href="../reference/get_mcctree.html">get_mcctree</a></span><span class="op">(</span>input_treesfile <span class="op">=</span> <span class="va">trees_files</span><span class="op">[</span><span class="va">i</span><span class="op">]</span>, output_dir <span class="op">=</span> <span class="va">out_dir</span><span class="op">)</span></span>
 <span><span class="op">}</span>, mc.cores <span class="op">=</span> <span class="va">cores</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<p>This function outputs nothing, but MCC trees are saved to the
+specified output directory.</p>
+<p>The MCC trees look like this, for example:</p>
+<p><img src="mcc_tree_pipeline_files/figure-html/mcc_tree_preview-1.png" width="700"></p>
+<p>where there are associated error bars for each node and uncertainty
+in the tree topology, but this will not be accounted for by
+TransPhylo.</p>
+</div>
+<div class="section level2">
+<h2 id="run-transphylo-on-the-mcc-trees">Run TransPhylo on the MCC Trees<a class="anchor" aria-label="anchor" href="#run-transphylo-on-the-mcc-trees"></a>
+</h2>
+<p>Now that we have the MCC trees, we can run TransPhylo on them.
+TransPhylo is a package that tries to infer the “who infected whom”
+tree, or transmission tree, taking the phylogenetic tree as data. In
+reality, there is uncertainty in the phylogenetic tree, but TransPhylo
+does not account for this.</p>
+<p>We will use the <code>run_TransPhylo</code> function to run
+TransPhylo on the MCC trees. We first read in the MCC trees we created
+above, make sure their names match the names in the cluster assignments
+data frame (BEAST2 does some slight renaming of its outputs
+automatically), and then run TransPhylo. We can run TransPhylo on all of
+the trees at once, sharing a couple of parameters that are common across
+the trees and can be estimated simultaneously.</p>
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Read the trees and manipulate the names to make sure they match</span></span>
 <span><span class="co"># the names in cluster_assignments</span></span>
 <span><span class="va">mcc_trees_files</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.files.html" class="external-link">list.files</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"mcc_trees_example"</span>,</span>
@@ -327,10 +474,13 @@ parameter</li>
 <span><span class="va">mcc_trees</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="va">mcc_trees_files</span>, <span class="fu">ape</span><span class="fu">::</span><span class="va"><a href="https://rdrr.io/pkg/ape/man/read.nexus.html" class="external-link">read.nexus</a></span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">mcc_trees</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">gsub</a></span><span class="op">(</span><span class="st">".nexus"</span>, <span class="st">""</span>, <span class="fu"><a href="https://rdrr.io/r/base/basename.html" class="external-link">basename</a></span><span class="op">(</span><span class="va">mcc_trees_files</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">mcc_trees</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">gsub</a></span><span class="op">(</span><span class="st">".*-"</span>, <span class="st">""</span>, <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">mcc_trees</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co"># Want to run trees from all lineages together, so paste the cluster</span></span>
+<span><span class="co"># assignments list of dataframes into one dataframe</span></span>
+<span><span class="va">all_cluster_assignments</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/do.call.html" class="external-link">do.call</a></span><span class="op">(</span><span class="va">rbind</span>, <span class="va">cluster_assignments</span><span class="op">)</span></span>
 <span><span class="co"># Run TransPhylo on the MCC trees</span></span>
 <span><span class="va">prob_source</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/run_TransPhylo.html">run_TransPhylo</a></span><span class="op">(</span><span class="va">mcc_trees</span>,</span>
 <span>                              type <span class="op">=</span> <span class="st">"mcctrees"</span>,</span>
-<span>                              cluster_dict <span class="op">=</span> <span class="va">cluster_assignments</span>,</span>
+<span>                              cluster_dict <span class="op">=</span> <span class="va">all_cluster_assignments</span>,</span>
 <span>                              out_dir <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"mcc_trees_example"</span>,</span>
 <span>                                                    <span class="st">"TransPhylo"</span>,</span>
 <span>                                                    package <span class="op">=</span> <span class="st">"beast2tpPipeline"</span><span class="op">)</span>,</span>
@@ -341,11 +491,47 @@ parameter</li>
 <span>                              share <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"neg"</span>, <span class="st">"off.r"</span><span class="op">)</span>,</span>
 <span>                              startNeg <span class="op">=</span> <span class="fl">1.48</span>,</span>
 <span>                              mcmcIterations <span class="op">=</span> <span class="fl">100</span><span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">prob_source</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"mcc_trees_example"</span>, <span class="st">"TransPhylo"</span>,</span>
-<span>                                   <span class="st">"tp_res_prob_source.rds"</span>,</span>
-<span>                                   package <span class="op">=</span> <span class="st">"beast2tpPipeline"</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co"># Get dataframe with covariates for regression</span></span>
+<p>This function outputs a data frame containing each sample ID and the
+probability of that sample being an infection source, i.e., the
+probability that they infected someone else with TB. It also saves the
+TransPhylo results (the <code>resTransPhylo</code> object output by
+<code><a href="https://rdrr.io/pkg/TransPhylo/man/infer_multittree_share_param.html" class="external-link">TransPhylo::infer_multittree_share_param</a></code>) as an
+<code>.rds</code> file in the specified output directory.</p>
+<p>We can also use the <code>ess_checks</code> function to check the
+mixing of the TransPhylo run, but it is probably more useful to look at
+the traceplots for estimated parameters. Below is an example of how to
+do this, using a TransPhylo function with only the first cluster.</p>
+<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">transphylo_res</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="va">transphylo_res_file</span><span class="op">)</span></span>
+<span><span class="fu">TransPhylo</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/TransPhylo/man/plotTraces.html" class="external-link">plotTraces</a></span><span class="op">(</span><span class="va">transphylo_res</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span></code></pre></div>
+<p>TransPhylo also provides methods of summarizing the posterior trees,
+and plotting the result. For example, we can get the “medoid” (extension
+of median) tree and plot it. Here, the phylogenetic tree is plotted with
+colors, where each color represents an individual and asterisks
+represent transmission events. In TransPhylo this object is called a
+<code>ctree</code>, or combined phylogenetic/transmission tree (“colored
+tree”).</p>
+<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">medoid</span> <span class="op">&lt;-</span> <span class="fu">TransPhylo</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/TransPhylo/man/medTTree.html" class="external-link">medTTree</a></span><span class="op">(</span><span class="va">transphylo_res</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span>
+<span><span class="fu">TransPhylo</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/TransPhylo/man/plotCTree.html" class="external-link">plotCTree</a></span><span class="op">(</span><span class="va">medoid</span><span class="op">)</span></span></code></pre></div>
+<p>There is also a “consensus” tree, which is built by combining clades
+occurring in at least some fraction of the posterior samples. This tree
+will not necessarily be a tree that is in the posterior samples. It can
+be plotted with <code>plot</code>. In TransPhylo this object is called a
+<code>ttree</code>, or transmission tree.</p>
+<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">cons</span> <span class="op">&lt;-</span> <span class="fu">TransPhylo</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/TransPhylo/man/consTTree.html" class="external-link">consTTree</a></span><span class="op">(</span><span class="va">transphylo_res</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">cons</span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level2">
+<h2 id="regression-with-transphylo-results">Regression with TransPhylo Results<a class="anchor" aria-label="anchor" href="#regression-with-transphylo-results"></a>
+</h2>
+<p>Finally, we can do some kind of regression with the probabilities
+assigned by TransPhylo. Here we will run a linear regression with the
+probabilities as the response variable and HIV status as the predictor.
+We will use the <code>regression</code> function to do so.</p>
+<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Get dataframe with covariates for regression</span></span>
 <span><span class="va">cleaned_data</span> <span class="op">&lt;-</span> <span class="va">metadata</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"SampleID"</span>, <span class="st">"hivfinal_new"</span><span class="op">)</span><span class="op">]</span></span>
 <span><span class="va">cleaned_data</span> <span class="op">&lt;-</span> <span class="va">cleaned_data</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/stats/complete.cases.html" class="external-link">complete.cases</a></span><span class="op">(</span><span class="va">cleaned_data</span><span class="op">)</span>, <span class="op">]</span></span>
 <span><span class="va">cleaned_data</span><span class="op">$</span><span class="va">hivfinal_new</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">as.factor</a></span><span class="op">(</span><span class="va">cleaned_data</span><span class="op">$</span><span class="va">hivfinal_new</span> <span class="op">-</span> <span class="fl">1</span><span class="op">)</span></span>
@@ -354,6 +540,98 @@ parameter</li>
 <span>                  cleaned_data <span class="op">=</span> <span class="va">cleaned_data</span>,</span>
 <span>                  prob_source <span class="op">=</span> <span class="va">prob_source</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">mdl</span><span class="op">)</span></span></code></pre></div>
+<p>We can add more covariates by adding columns to the
+<code>cleaned_data</code> data frame. The <code>regression</code>
+function will automatically remove rows with missing values.</p>
+<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Get dataframe with covariates for regression, add age and gender</span></span>
+<span><span class="va">cleaned_data</span> <span class="op">&lt;-</span> <span class="va">metadata</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"SampleID"</span>, <span class="st">"hivfinal_new"</span>, <span class="st">"agenew"</span>, <span class="st">"genderf1"</span><span class="op">)</span><span class="op">]</span></span>
+<span><span class="va">cleaned_data</span> <span class="op">&lt;-</span> <span class="va">cleaned_data</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/stats/complete.cases.html" class="external-link">complete.cases</a></span><span class="op">(</span><span class="va">cleaned_data</span><span class="op">)</span>, <span class="op">]</span></span>
+<span><span class="va">cleaned_data</span><span class="op">$</span><span class="va">hivfinal_new</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">as.factor</a></span><span class="op">(</span><span class="va">cleaned_data</span><span class="op">$</span><span class="va">hivfinal_new</span> <span class="op">-</span> <span class="fl">1</span><span class="op">)</span></span>
+<span><span class="va">cleaned_data</span><span class="op">$</span><span class="va">genderf1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">cleaned_data</span><span class="op">$</span><span class="va">genderf1</span>,</span>
+<span>                                levels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span><span class="op">)</span>,</span>
+<span>                                labels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"M"</span>, <span class="st">"F"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co"># Run a linear model with the probabilities from TransPhylo</span></span>
+<span><span class="va">mdl</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/regression.html">regression</a></span><span class="op">(</span>method <span class="op">=</span> <span class="st">"linear"</span>,</span>
+<span>                  cleaned_data <span class="op">=</span> <span class="va">cleaned_data</span>,</span>
+<span>                  prob_source <span class="op">=</span> <span class="va">prob_source</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">mdl</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## </span></span>
+<span><span class="co">## Call:</span></span>
+<span><span class="co">## lm(formula = prob_source ~ ., data = cleaned_data)</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Residuals:</span></span>
+<span><span class="co">##      Min       1Q   Median       3Q      Max </span></span>
+<span><span class="co">## -0.26801 -0.17625 -0.14314  0.00812  0.87396 </span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Coefficients:</span></span>
+<span><span class="co">##                Estimate Std. Error t value Pr(&gt;|t|)   </span></span>
+<span><span class="co">## (Intercept)    0.251241   0.077408   3.246  0.00134 **</span></span>
+<span><span class="co">## hivfinal_new1  0.019518   0.041655   0.469  0.63981   </span></span>
+<span><span class="co">## agenew        -0.002502   0.001745  -1.434  0.15291   </span></span>
+<span><span class="co">## genderf1F     -0.019601   0.042283  -0.464  0.64339   </span></span>
+<span><span class="co">## ---</span></span>
+<span><span class="co">## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Residual standard error: 0.3058 on 236 degrees of freedom</span></span>
+<span><span class="co">## Multiple R-squared:  0.01246,    Adjusted R-squared:  -9.254e-05 </span></span>
+<span><span class="co">## F-statistic: 0.9926 on 3 and 236 DF,  p-value: 0.397</span></span></code></pre>
+<p>Alternatively, a probability threshold can be set to mark individuals
+as infectors or non-infectors, and a logistic regression may be run.
+This is done by setting the <code>method</code> argument in
+<code>regression</code> to <code>"logistic"</code> and specifying a
+threshold.</p>
+<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Run a logistic model with the probabilities from TransPhylo</span></span>
+<span><span class="co"># Set the probability threshold to 0.5, where prob &gt;= 0.5 is</span></span>
+<span><span class="co"># considered an infector</span></span>
+<span><span class="va">mdl_logistic</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/regression.html">regression</a></span><span class="op">(</span>method <span class="op">=</span> <span class="st">"logistic"</span>,</span>
+<span>                           cleaned_data <span class="op">=</span> <span class="va">cleaned_data</span>,</span>
+<span>                           prob_source <span class="op">=</span> <span class="va">prob_source</span>,</span>
+<span>                           prob_cutoff <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">mdl_logistic</span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level2">
+<h2 id="exploration-of-the-pipeline">Exploration of the Pipeline<a class="anchor" aria-label="anchor" href="#exploration-of-the-pipeline"></a>
+</h2>
+<p>This package makes it very convenient to change parts of the pipeline
+and explore the impact of those changes on the results. For example,
+suppose we want to change the sampling fraction prior for TransPhylo,
+get new results, do linear regression with those results, and compare
+them to the old results.</p>
+<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Run TransPhylo on the MCC trees with a new sampling fraction prior</span></span>
+<span><span class="co"># Using same MCC trees we have already read in</span></span>
+<span><span class="va">prob_source</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/run_TransPhylo.html">run_TransPhylo</a></span><span class="op">(</span><span class="va">mcc_trees</span>,</span>
+<span>                              type <span class="op">=</span> <span class="st">"mcctrees"</span>,</span>
+<span>                              cluster_dict <span class="op">=</span> <span class="va">cluster_assignments</span>,</span>
+<span>                              out_dir <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"mcc_trees_example"</span>,</span>
+<span>                                                    <span class="st">"TransPhylo"</span>,</span>
+<span>                                                    package <span class="op">=</span> <span class="st">"beast2tpPipeline"</span><span class="op">)</span>,</span>
+<span>                              output_name <span class="op">=</span> <span class="st">"tp_res_changed_sampling_frac"</span>,</span>
+<span>                              w.shape <span class="op">=</span> <span class="fl">10</span>,</span>
+<span>                              w.scale <span class="op">=</span> <span class="fl">0.1</span>,</span>
+<span>                              prior_pi_a <span class="op">=</span> <span class="fl">26</span>,</span>
+<span>                              prior_pi_b <span class="op">=</span> <span class="fl">74</span>,</span>
+<span>                              share <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"neg"</span>, <span class="st">"off.r"</span><span class="op">)</span>,</span>
+<span>                              startNeg <span class="op">=</span> <span class="fl">1.48</span>,</span>
+<span>                              mcmcIterations <span class="op">=</span> <span class="fl">100</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Check mixing again</span></span>
+<span><span class="va">transphylo_res</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"mcc_trees_example"</span>, <span class="st">"TransPhylo"</span>,</span>
+<span>                              <span class="st">"tp_res_changed_sampling_frac.rds"</span>,</span>
+<span>                              package <span class="op">=</span> <span class="st">"beast2tpPipeline"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/ess_checks.html">ess_checks</a></span><span class="op">(</span><span class="st">"TransPhylo"</span>, <span class="va">transphylo_res</span>, min_ess <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Run a linear model with the new probabilities from TransPhylo</span></span>
+<span><span class="va">prob_source</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"mcc_trees_example"</span>, <span class="st">"TransPhylo"</span>,</span>
+<span>                                   <span class="st">"tp_res_prob_source.rds"</span>,</span>
+<span>                                   package <span class="op">=</span> <span class="st">"beast2tpPipeline"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co"># Run a linear model with the probabilities from TransPhylo</span></span>
+<span><span class="va">mdl_new</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/regression.html">regression</a></span><span class="op">(</span>method <span class="op">=</span> <span class="st">"linear"</span>,</span>
+<span>                      cleaned_data <span class="op">=</span> <span class="va">cleaned_data</span>,</span>
+<span>                      prob_source <span class="op">=</span> <span class="va">prob_source</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">mdl_new</span><span class="op">)</span></span></code></pre></div>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>

@@ -58,13 +58,14 @@
 <div class="section level2">
 <h2 id="introduction">Introduction<a class="anchor" aria-label="anchor" href="#introduction"></a>
 </h2>
-<p>This package was created to work with data from the Kopanyo study, namely fasta files of TB sequences and associated metadata.</p>
+<p>This package was created to work with data from the Kopanyo study, namely fasta files of TB sequences and associated metadata. It defines a clear pipeline from fasta files of sequences and associated metadata, through creating SNP clusters, running BEAST2, running TransPhylo, and doing regression on the results.</p>
+<p>In <a href="https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1010696" class="external-link">Using genetic data to identify transmission risk factors: Statistical assessment and application to tuberculosis transmission</a>, Goldstein et al. show that this pipeline is very biased; the BEAST2-TransPhylo pipeline has low sensitivity of identifying infection sources and biases regression coefficients toward zero. This package was built to facilitate exploration of the qualities of this pipeline.</p>
 <p>This package is built such that each step in the pipeline has an associated function. The steps and functions are:</p>
 <ol style="list-style-type: decimal">
 <li>
 <strong>Assigning SNP clusters</strong>: <code>assign_snp_clusters</code> takes a set of sequences and metadata, and assigns sequences to SNP clusters.</li>
 <li>
-<strong>Creating BEAST2 clusters</strong>: <code>create_BEAST2_clusters</code> takes the SNP clusters and separates the sequence data by cluster, keeping only the SNPs.</li>
+<strong>Creating BEAST2 clusters</strong>: <code>create_BEAST2_clusters</code> takes the SNP clusters and separates the sequence data by cluster, keeping only the SNPs if desired.</li>
 <li>
 <strong>Creating XML files for BEAST2</strong>: <code>create_cluster_xml</code> takes the SNP data and creates an XML file for BEAST2 to run.</li>
 <li>
@@ -80,17 +81,12 @@
 <div class="section level2">
 <h2 id="getting-started">Getting Started<a class="anchor" aria-label="anchor" href="#getting-started"></a>
 </h2>
-<p>To use this package, you will need to have some dependencies installed. You can install them with the following code:</p>
+<p>Install the <code>beast2tpPipeline</code> package from GitHub:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"ape"</span>, <span class="st">"TransPhylo"</span>, <span class="st">"coda"</span>, <span class="st">"tracerer"</span>, <span class="st">"lubridate"</span>, <span class="st">"tidyverse"</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"JamesStimson/transcluster"</span>, build_vignettes <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
-<p>You will also need to have BEAST2 installed on your computer. You can download it <a href="https://www.beast2.org/" class="external-link">here</a>. If you use a package manager like homebrew, you can install BEAST2 with <code>brew install beast2</code> in your terminal. This will install a suite of programs, including BEAST2, BEAUti, and TreeAnnotator. You will probably also want to install Tracer to look at traceplots and other diagnostics of your BEAST2 runs. You can download Tracer <a href="https://github.com/beast-dev/tracer/releases/tag/v1.7.2" class="external-link">here</a>.</p>
-<p>Next, install the <code>beast2tpPipeline</code> package from GitHub:</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"jessalynnsebastian/beast2tpPipeline"</span>, build_vignettes <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
-<p>Then, load the package:</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://jessalynnsebastian.github.io/beast2tpPipeline/" class="external-link">beast2tpPipeline</a></span><span class="op">)</span></span></code></pre></div>
+<p>There are some dependencies that should be automatically downloaded. Then, load the package:</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://jessalynnsebastian.github.io/beast2tpPipeline/">beast2tpPipeline</a></span><span class="op">)</span></span></code></pre></div>
 </div>
 </div>
   </main><aside class="col-md-3"><div class="license">

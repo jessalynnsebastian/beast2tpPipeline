@@ -48,8 +48,7 @@ separate DNAbin objcts by cluster. If desired, keep only SNPs.</p>
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">create_BEAST2_clusters</span><span class="op">(</span></span>
 <span>  <span class="va">seqs</span>,</span>
-<span>  <span class="va">snp_clusters</span>,</span>
-<span>  collectdts <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  <span class="va">cluster_assignments</span>,</span>
 <span>  min_cluster_size <span class="op">=</span> <span class="fl">4</span>,</span>
 <span>  min_varsites <span class="op">=</span> <span class="fl">8</span>,</span>
 <span>  snps_only <span class="op">=</span> <span class="cn">TRUE</span>,</span>
@@ -68,15 +67,10 @@ separate DNAbin objcts by cluster. If desired, keep only SNPs.</p>
 to sample IDs, or an <code><a href="https://rdrr.io/pkg/ape/man/DNAbin.html" class="external-link">ape::DNAbin</a></code> object.</p></dd>
 
 
-<dt id="arg-snp-clusters">snp_clusters<a class="anchor" aria-label="anchor" href="#arg-snp-clusters"></a></dt>
-<dd><p>A named vector of SNP cluster assignments, where names
-correspond to sample IDs.</p></dd>
-
-
-<dt id="arg-collectdts">collectdts<a class="anchor" aria-label="anchor" href="#arg-collectdts"></a></dt>
-<dd><p>A named vector of collection dates, where names correspond
-to sample IDs. Dates should be in the format "YYYY-MM-DD" or in decimal format.
-as.character = TRUE).</p></dd>
+<dt id="arg-cluster-assignments">cluster_assignments<a class="anchor" aria-label="anchor" href="#arg-cluster-assignments"></a></dt>
+<dd><p>A data frame of cluster assignments, including
+at least <code>sample_id</code> and <code>cluster_name</code>, as output by <code>assign_snp_clusters</code>.
+Must also include <code>collectdt</code> if writing a cluster dictionary.</p></dd>
 
 
 <dt id="arg-min-cluster-size">min_cluster_size<a class="anchor" aria-label="anchor" href="#arg-min-cluster-size"></a></dt>
