@@ -32,7 +32,7 @@ However, it is computationally more expensive: instead of one TransPhylo run on 
 run TransPhylo on each cluster separately, each time with a decently-sized set of trees. This should be run
 on a computing cluster. Additionally, via this method, parameter sharing is not possible.
 
-In this vignette, we will use this package to do (1).
+In this vignette, we will use this package to do (1). For the vignette on (2), see Using the BEAST2 - TransPhylo Pipeline with a Sample of BEAST2 Iterations (Posterior Trees).
 
 First, load the package with `library`.
 
@@ -315,7 +315,7 @@ ggtree(beast, ladderize = FALSE) +
 where there are associated error bars for each node and uncertainty in the tree topology, but this will not be accounted
 for by TransPhylo.
 
-# Run TransPhylo on the MCC Trees
+# Running TransPhylo on the MCC Trees
 
 Now that we have the MCC trees, we can run TransPhylo on them. TransPhylo is a package that tries to infer the
 "who infected whom" tree, or transmission tree, taking the phylogenetic tree as data. In reality, there is uncertainty
@@ -399,16 +399,22 @@ plot(cons)
 knitr::include_graphics("images/consttree.svg")
 ```
 
-# Regression with TransPhylo Results
-
-Finally, we can do some kind of regression with the probabilities assigned by TransPhylo. Here we will run a linear regression
-with the probabilities as the response variable and HIV status as the predictor. We will use the `regression` function to do so.
-
+We may also be interested in looking at the distribution of the probabilities assigned by TransPhylo:
 ```{r prob_source_saved, echo = F}
 prob_source <- readRDS(system.file("mcc_trees_example", "TransPhylo",
                                    "tp_res_prob_source.rds",
                                    package = "beast2tpPipeline"))
 ```
+
+```{r prob_source_histogram}
+hist(prob_source$prob, main = "Distribution of TransPhylo Probabilities",
+     xlab = "Probability of being an infector", col = "lightblue")
+```
+
+# Regression with TransPhylo Results
+
+Finally, we can do some kind of regression with the probabilities assigned by TransPhylo. Here we will run a linear regression
+with the probabilities as the response variable and HIV status as the predictor. We will use the `regression` function to do so.
 
 ```{r regression, eval = F}
 # Get dataframe with covariates for regression
@@ -478,11 +484,13 @@ prob_source <- run_TransPhylo(mcc_trees,
                               startNeg = 1.48,
                               mcmcIterations = 100000)
 
-# Check mixing again
-transphylo_res <- system.file("mcc_trees_example", "TransPhylo",
-                              "tp_res_changed_sampling_frac.rds",
-                              package = "beast2tpPipeline")
-ess_checks("TransPhylo", transphylo_res, min_ess = 10)
+# Look at some traceplots again
+transphylo_res <- readRDS(transphylo_res_file)
+TransPhylo::plotTraces(transphylo_res[[1]])
+```
+
+```{r include_traceplot_image_pi2, echo = F}
+knitr::include_graphics("images/example_traceplots_pi2.svg")
 ```
 
 ```{r get_prob_source_changed_sampling_frac, echo = F}
@@ -492,7 +500,15 @@ prob_source <- readRDS(system.file("mcc_trees_example", "TransPhylo",
                                    package = "beast2tpPipeline"))
 ```
 
-Now we have the updated probabilities, and we can redo our linear (or logistic) regression with these new probabilities.
+Now we have the updated probabilities, and we can compare their distribution to their distribution under the old
+sampling fraction prior.
+
+```{r prob_source_histogram_pi2}
+hist(prob_source$prob, main = "Distribution of TransPhylo Probabilities",
+     xlab = "Probability of being an infector", col = "lightblue")
+```
+
+We can also redo our linear (or logistic) regression with these new probabilities.
 
 ```{r model_changed_sampling_frac}
 mdl_new <- regression(method = "linear",

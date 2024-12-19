@@ -64,6 +64,9 @@ run_TransPhylo <- function(trees,
       stop("Not all tree names are in the cluster dictionary.")
     }
   } else if (type == "trees_sample") {
+    if (is.null(cluster_name)) {
+      stop("Cluster name must be provided for type 'trees_sample'.")
+    }
     if (!cluster_name %in% cluster_dict$cluster_name) {
       stop("Cluster name not in cluster dictionary.")
     }
