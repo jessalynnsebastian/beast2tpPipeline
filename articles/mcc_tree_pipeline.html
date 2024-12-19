@@ -35,6 +35,7 @@
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
 <li><a class="dropdown-item" href="../articles/mcc_tree_pipeline.html">Using the BEAST2 - TransPhylo Pipeline with Maximum Clade Credibility Trees</a></li>
+    <li><a class="dropdown-item" href="../articles/tree_sample_pipeline.html">Using the BEAST2 - TransPhylo Pipeline with a Sample of BEAST2 Iterations (Posterior Trees)</a></li>
   </ul>
 </li>
       </ul>
@@ -98,7 +99,9 @@ each time with a decently-sized set of trees. This should be run on a
 computing cluster. Additionally, via this method, parameter sharing is
 not possible.</li>
 </ol>
-<p>In this vignette, we will use this package to do (1).</p>
+<p>In this vignette, we will use this package to do (1). For the
+vignette on (2), see Using the BEAST2 - TransPhylo Pipeline with a
+Sample of BEAST2 Iterations (Posterior Trees).</p>
 <p>First, load the package with <code>library</code>.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://jessalynnsebastian.github.io/beast2tpPipeline/">beast2tpPipeline</a></span><span class="op">)</span></span></code></pre></div>
@@ -452,7 +455,7 @@ in the tree topology, but this will not be accounted for by
 TransPhylo.</p>
 </div>
 <div class="section level2">
-<h2 id="run-transphylo-on-the-mcc-trees">Run TransPhylo on the MCC Trees<a class="anchor" aria-label="anchor" href="#run-transphylo-on-the-mcc-trees"></a>
+<h2 id="running-transphylo-on-the-mcc-trees">Running TransPhylo on the MCC Trees<a class="anchor" aria-label="anchor" href="#running-transphylo-on-the-mcc-trees"></a>
 </h2>
 <p>Now that we have the MCC trees, we can run TransPhylo on them.
 TransPhylo is a package that tries to infer the “who infected whom”
@@ -527,6 +530,12 @@ be plotted with <code>plot</code>. In TransPhylo this object is called a
 <code class="sourceCode R"><span><span class="va">cons</span> <span class="op">&lt;-</span> <span class="fu">TransPhylo</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/TransPhylo/man/consTTree.html" class="external-link">consTTree</a></span><span class="op">(</span><span class="va">transphylo_res</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">cons</span><span class="op">)</span></span></code></pre></div>
 <p><img src="images%2Fconsttree.svg"><!-- --></p>
+<p>We may also be interested in looking at the distribution of the
+probabilities assigned by TransPhylo:</p>
+<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/hist.html" class="external-link">hist</a></span><span class="op">(</span><span class="va">prob_source</span><span class="op">$</span><span class="va">prob</span>, main <span class="op">=</span> <span class="st">"Distribution of TransPhylo Probabilities"</span>,</span>
+<span>     xlab <span class="op">=</span> <span class="st">"Probability of being an infector"</span>, col <span class="op">=</span> <span class="st">"lightblue"</span><span class="op">)</span></span></code></pre></div>
+<p><img src="mcc_tree_pipeline_files/figure-html/prob_source_histogram-1.png" width="700"></p>
 </div>
 <div class="section level2">
 <h2 id="regression-with-transphylo-results">Regression with TransPhylo Results<a class="anchor" aria-label="anchor" href="#regression-with-transphylo-results"></a>
@@ -535,7 +544,7 @@ be plotted with <code>plot</code>. In TransPhylo this object is called a
 assigned by TransPhylo. Here we will run a linear regression with the
 probabilities as the response variable and HIV status as the predictor.
 We will use the <code>regression</code> function to do so.</p>
-<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Get dataframe with covariates for regression</span></span>
 <span><span class="va">cleaned_data</span> <span class="op">&lt;-</span> <span class="va">metadata</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"SampleID"</span>, <span class="st">"hivfinal_new"</span><span class="op">)</span><span class="op">]</span></span>
 <span><span class="va">cleaned_data</span> <span class="op">&lt;-</span> <span class="va">cleaned_data</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/stats/complete.cases.html" class="external-link">complete.cases</a></span><span class="op">(</span><span class="va">cleaned_data</span><span class="op">)</span>, <span class="op">]</span></span>
@@ -548,7 +557,7 @@ We will use the <code>regression</code> function to do so.</p>
 <p>We can add more covariates by adding columns to the
 <code>cleaned_data</code> data frame. The <code>regression</code>
 function will automatically remove rows with missing values.</p>
-<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Get dataframe with covariates for regression, add age and gender</span></span>
 <span><span class="va">cleaned_data</span> <span class="op">&lt;-</span> <span class="va">metadata</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"SampleID"</span>, <span class="st">"hivfinal_new"</span>, <span class="st">"agenew"</span>, <span class="st">"genderf1"</span><span class="op">)</span><span class="op">]</span></span>
 <span><span class="va">cleaned_data</span> <span class="op">&lt;-</span> <span class="va">cleaned_data</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/stats/complete.cases.html" class="external-link">complete.cases</a></span><span class="op">(</span><span class="va">cleaned_data</span><span class="op">)</span>, <span class="op">]</span></span>
@@ -586,7 +595,7 @@ as infectors or non-infectors, and a logistic regression may be run.
 This is done by setting the <code>method</code> argument in
 <code>regression</code> to <code>"logistic"</code> and specifying a
 threshold.</p>
-<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Run a logistic model with the probabilities from TransPhylo</span></span>
 <span><span class="co"># Set the probability threshold to 0.5, where prob &gt;= 0.5 is</span></span>
 <span><span class="co"># considered an infector</span></span>
@@ -604,7 +613,7 @@ and explore the impact of those changes on the results. For example,
 suppose we want to change the sampling fraction prior for TransPhylo,
 get new results, do linear regression with those results, and compare
 them to the old results.</p>
-<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Run TransPhylo on the MCC trees with a new sampling fraction prior</span></span>
 <span><span class="co"># Using same MCC trees we have already read in</span></span>
 <span><span class="va">prob_source</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/run_TransPhylo.html">run_TransPhylo</a></span><span class="op">(</span><span class="va">mcc_trees</span>,</span>
@@ -622,14 +631,20 @@ them to the old results.</p>
 <span>                              startNeg <span class="op">=</span> <span class="fl">1.48</span>,</span>
 <span>                              mcmcIterations <span class="op">=</span> <span class="fl">100000</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Check mixing again</span></span>
-<span><span class="va">transphylo_res</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"mcc_trees_example"</span>, <span class="st">"TransPhylo"</span>,</span>
-<span>                              <span class="st">"tp_res_changed_sampling_frac.rds"</span>,</span>
-<span>                              package <span class="op">=</span> <span class="st">"beast2tpPipeline"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="../reference/ess_checks.html">ess_checks</a></span><span class="op">(</span><span class="st">"TransPhylo"</span>, <span class="va">transphylo_res</span>, min_ess <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span></code></pre></div>
-<p>Now we have the updated probabilities, and we can redo our linear (or
-logistic) regression with these new probabilities.</p>
-<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
+<span><span class="co"># Look at some traceplots again</span></span>
+<span><span class="va">transphylo_res</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="va">transphylo_res_file</span><span class="op">)</span></span>
+<span><span class="fu">TransPhylo</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/TransPhylo/man/plotTraces.html" class="external-link">plotTraces</a></span><span class="op">(</span><span class="va">transphylo_res</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span></code></pre></div>
+<p><img src="images%2Fexample_traceplots_pi2.svg"><!-- --></p>
+<p>Now we have the updated probabilities, and we can compare their
+distribution to their distribution under the old sampling fraction
+prior.</p>
+<div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/hist.html" class="external-link">hist</a></span><span class="op">(</span><span class="va">prob_source</span><span class="op">$</span><span class="va">prob</span>, main <span class="op">=</span> <span class="st">"Distribution of TransPhylo Probabilities"</span>,</span>
+<span>     xlab <span class="op">=</span> <span class="st">"Probability of being an infector"</span>, col <span class="op">=</span> <span class="st">"lightblue"</span><span class="op">)</span></span></code></pre></div>
+<p><img src="mcc_tree_pipeline_files/figure-html/prob_source_histogram_pi2-1.png" width="700"></p>
+<p>We can also redo our linear (or logistic) regression with these new
+probabilities.</p>
+<div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">mdl_new</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/regression.html">regression</a></span><span class="op">(</span>method <span class="op">=</span> <span class="st">"linear"</span>,</span>
 <span>                      cleaned_data <span class="op">=</span> <span class="va">cleaned_data</span>,</span>
 <span>                      prob_source <span class="op">=</span> <span class="va">prob_source</span><span class="op">)</span></span>
