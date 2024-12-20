@@ -53,3 +53,4 @@ are automatically named after their FASTA names.}
 \description{
 Create a BEAST2 XML File from a Template
 }
+\keyword{internal}

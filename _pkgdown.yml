@@ -29,6 +29,8 @@ reference:
   contents:
   - sample_BEAST2_trees
   - run_TransPhylo
+  - prep_for_TransPhylo
+  - get_prob_source
 - title: "Regression with TransPhylo Output"
   contents:
   - regression

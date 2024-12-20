@@ -99,6 +99,7 @@ create_xml_files <- function(path_to_template = system.file("xml_template/0_xml_
 #' @inheritParams create_xml_files
 #'
 #' @returns NULL
+#' @keywords internal
 #'
 #' @import ape
 
