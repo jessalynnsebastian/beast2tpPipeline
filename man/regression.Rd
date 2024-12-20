@@ -5,15 +5,18 @@
 \title{Run Linear or Logistic Regression with TransPhylo Results}
 \usage{
 regression(
-  method = c("logistic", "linear"),
+  method = c("logistic", "linear", "bayesian_logistic_misclass"),
   cleaned_data,
   prob_source,
-  prob_cutoff = NULL
+  prob_cutoff = NULL,
+  sensitivity = NULL,
+  specificity = NULL,
+  ...
 )
 }
 \arguments{
 \item{method}{A character string specifying the type of regression to run.
-Can be "linear" or "logistic".}
+Can be "linear", "logistic", or "bayesian_logistic_misclass".}
 
 \item{cleaned_data}{A data frame containing the covariates to use in the
 regression. Must contain a column "SampleID" with the sample IDs.}
@@ -24,9 +27,17 @@ the probability of each sample being the infection source.}
 
 \item{prob_cutoff}{A numeric specifying the probability cutoff to use for
 logistic regression. If NULL, logistic regression will not be run.}
+
+\item{sensitivity}{Numeric. Only used if \code{method} is "bayesian_logistic_misclass".}
+
+\item{specificity}{Numeric. Only used if \code{method} is "bayesian_logistic_misclass".}
+
+\item{...}{Additional arguments to pass to Stan if \code{method} is
+"bayesian_logistic_misclass". Iterations and chains default to 2000 and 4
+respectively.}
 }
 \value{
-An \code{lm} or \code{glm} object.
+An \code{lm} object, a \code{glm} object, or a \code{stanfit}.
 }
 \description{
 This function takes probability estimates from TransPhylo and runs a
