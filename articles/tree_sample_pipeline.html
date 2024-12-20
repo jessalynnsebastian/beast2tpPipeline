@@ -105,6 +105,8 @@ TransPhylo Pipeline with Maximum Clade Credibility Trees</a>.</p>
 <p>First, load the package with <code>library</code>.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://jessalynnsebastian.github.io/beast2tpPipeline/">beast2tpPipeline</a></span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## Error in get(paste0(generic, ".", class), envir = get_method_env()) : </span></span>
+<span><span class="co">##   object 'type_sum.accel' not found</span></span></code></pre>
 </div>
 <div class="section level2">
 <h2 id="data-for-this-example">Data for this Example<a class="anchor" aria-label="anchor" href="#data-for-this-example"></a>
@@ -126,7 +128,7 @@ transmit TB to someone else.</p>
 <h2 id="creating-single-nucleotide-polymorphism-snp-clusters">Creating Single Nucleotide Polymorphism (SNP) Clusters<a class="anchor" aria-label="anchor" href="#creating-single-nucleotide-polymorphism-snp-clusters"></a>
 </h2>
 <p>First, read the fasta files and the metadata into <code>R</code>.</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">fasta_files</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.files.html" class="external-link">list.files</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"kopanyo"</span>, package <span class="op">=</span> <span class="st">"beast2tpPipeline"</span><span class="op">)</span>,</span>
 <span>                          pattern <span class="op">=</span> <span class="st">".fasta"</span>, full.names <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="va">tb_sequences</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="va">fasta_files</span>, <span class="fu">ape</span><span class="fu">::</span><span class="va"><a href="https://rdrr.io/pkg/ape/man/read.dna.html" class="external-link">read.dna</a></span>, format <span class="op">=</span> <span class="st">"fasta"</span>,</span>
@@ -136,7 +138,7 @@ transmit TB to someone else.</p>
 <span>                       pattern <span class="op">=</span> <span class="st">".csv"</span>, full.names <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="va">metadata</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv</a></span><span class="op">(</span><span class="va">metadata</span><span class="op">)</span></span></code></pre></div>
 <p>We can take a peek at the data:</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">metadata</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">##   SampleID Lineage genderf1 agenew hivfinal_new gMixture  collectdt smokef1</span></span>
 <span><span class="co">## 1 BTB-1139       1        1     52            1        0 2014-07-30       1</span></span>
@@ -152,7 +154,7 @@ transmit TB to someone else.</p>
 <span><span class="co">## 4         1              2            1.1.2</span></span>
 <span><span class="co">## 5         1              2            1.1.2</span></span>
 <span><span class="co">## 6         1              2            1.1.2</span></span></code></pre>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">metadata</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## [1] 1426   11</span></span></code></pre>
 <p>Notice that we have 1426 sequences and corresponding metadata. It
@@ -174,7 +176,7 @@ latter is still available in the function.</p>
 <p>To assign sequences to their clusters based on SNPs, we will use
 <code>assign_snp_clusters</code>, which is a wrapper around some
 <code>transcluster</code> functions.</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Get collection dates by lineage</span></span>
 <span><span class="va">collectdts</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/split.html" class="external-link">split</a></span><span class="op">(</span><span class="va">metadata</span>, <span class="va">metadata</span><span class="op">$</span><span class="va">Lineage</span><span class="op">)</span></span>
 <span><span class="co"># Create named vectors of dates, as required by the function</span></span>
@@ -202,7 +204,7 @@ you already have a distance matrix saved, you can pass it to
 <code>assign_snp_clusters</code> with the <code>dist_matrix</code>
 argument.</p>
 <p>Now we have:</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Rename clusters to include lineage</span></span>
 <span><span class="va">cluster_assignments</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_along</a></span><span class="op">(</span><span class="va">cluster_assignments</span><span class="op">)</span>, <span class="kw">function</span><span class="op">(</span><span class="va">i</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="va">cluster_assignments</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">cluster_name</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"lineage"</span>, <span class="va">i</span>, <span class="st">"_"</span>, <span class="va">cluster_assignments</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">cluster_name</span><span class="op">)</span></span>
@@ -255,7 +257,7 @@ BEAST2).</p>
 with fewer than 8 SNPs. We also add constant sites to the sequences, to
 deal with ascertainment bias in BEAST2 due to the fact that we are only
 keeping the SNPs.</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># For each lineage, use the cluster assignments to put the sequences</span></span>
 <span><span class="co"># into clusters</span></span>
 <span><span class="va">snp_matrices</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_along</a></span><span class="op">(</span><span class="va">tb_sequences</span><span class="op">)</span>, <span class="kw">function</span><span class="op">(</span><span class="va">lineage_index</span><span class="op">)</span> <span class="op">{</span></span>
@@ -339,7 +341,7 @@ template:</p>
 for us) for the cluster, the name of the cluster, the sampling dates for
 the sequences in the cluster, and a directory to output the xml files
 to.</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># For each lineage, write the xml files for all clusters</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/invisible.html" class="external-link">invisible</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_along</a></span><span class="op">(</span><span class="va">snp_matrices</span><span class="op">)</span>, <span class="kw">function</span><span class="op">(</span><span class="va">lineage_index</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="co"># Get list of clusters for the lineage</span></span>
@@ -367,7 +369,7 @@ you have installed and where it is installed to.</p>
 package. This is not necessary, but it can speed up the process if you
 have multiple cores available. Note that this will not work on Windows,
 but there are other ways to parallelize on Windows machines.</p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">cores</span> <span class="op">&lt;-</span> <span class="fu">parallel</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/parallel/detectCores.html" class="external-link">detectCores</a></span><span class="op">(</span><span class="op">)</span> <span class="op">/</span> <span class="fl">2</span></span>
 <span><span class="va">input_xml</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.files.html" class="external-link">list.files</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"mcc_trees_example"</span>, <span class="st">"BEAST2"</span>,</span>
 <span>                                    package <span class="op">=</span> <span class="st">"beast2tpPipeline"</span><span class="op">)</span>,</span>
@@ -380,7 +382,7 @@ mixing of the MCMC, we can make sure the effective sample size (ESS) is
 above 200 for all parameters. We can do this using the
 <code>ess_checks</code> function, which calls on the package
 <code>tracerer</code>.</p>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">beast_logs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.files.html" class="external-link">list.files</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"mcc_trees_example"</span>, <span class="st">"BEAST2"</span>,</span>
 <span>                                     package <span class="op">=</span> <span class="st">"beast2tpPipeline"</span><span class="op">)</span>,</span>
 <span>                         pattern <span class="op">=</span> <span class="st">"\\.log"</span>, full.names <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
@@ -439,7 +441,7 @@ phylogenetic tree. By running TransPhylo on a subsample of the trees, we
 can account for some of this uncertainty.</p>
 <p>First, we use the <code>sample_BEAST2_trees</code> function to sample
 100 trees from each BEAST2 run.</p>
-<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">beast_trees_files</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.files.html" class="external-link">list.files</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"mcc_trees_example"</span>, <span class="st">"BEAST2"</span>,</span>
 <span>                                            package <span class="op">=</span> <span class="st">"beast2tpPipeline"</span><span class="op">)</span>,</span>
 <span>                                pattern <span class="op">=</span> <span class="st">"\\.trees"</span>, full.names <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
@@ -448,15 +450,29 @@ can account for some of this uncertainty.</p>
 <span>  <span class="fu"><a href="../reference/sample_BEAST2_trees.html">sample_BEAST2_trees</a></span><span class="op">(</span><span class="va">trees_file</span>, n_trees <span class="op">=</span> <span class="fl">100</span>, seed <span class="op">=</span> <span class="fl">123</span><span class="op">)</span></span>
 <span><span class="op">}</span><span class="op">)</span></span></code></pre></div>
 <p>For each cluster, this gives us:</p>
-<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">gridExtra</span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://www.amazon.com/Integration-Manipulation-Visualization-Phylogenetic-Computational-ebook/dp/B0B5NLZR1Z/" class="external-link">ggtree</a></span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## ggtree v3.14.0 Learn more at https://yulab-smu.top/contribution-tree-data/</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Please cite:</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Guangchuang Yu, David Smith, Huachen Zhu, Yi Guan, Tommy Tsan-Yuk Lam.</span></span>
+<span><span class="co">## ggtree: an R package for visualization and annotation of phylogenetic</span></span>
+<span><span class="co">## trees with their covariates and other associated data. Methods in</span></span>
+<span><span class="co">## Ecology and Evolution. 2017, 8(1):28-36. doi:10.1111/2041-210X.12628</span></span></code></pre>
+<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">beast_trees_list</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span></span></code></pre></div>
 <pre><code><span><span class="co">## 100 phylogenetic trees</span></span></code></pre>
-<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mfrow <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">10</span>, <span class="fl">10</span><span class="op">)</span><span class="op">)</span></span>
+<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Plot the first cluster's tree sample</span></span>
+<span><span class="va">plots</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="fl">100</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">beast_trees_list</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">[</span><span class="va">i</span><span class="op">]</span>, show.tip.label <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
-<span><span class="op">}</span></span></code></pre></div>
-<p><img src="tree_sample_pipeline_files/figure-html/beast_trees_preview-1.png" width="700"><img src="tree_sample_pipeline_files/figure-html/beast_trees_preview-2.png" width="700"><img src="tree_sample_pipeline_files/figure-html/beast_trees_preview-3.png" width="700"><img src="tree_sample_pipeline_files/figure-html/beast_trees_preview-4.png" width="700"><img src="tree_sample_pipeline_files/figure-html/beast_trees_preview-5.png" width="700"><img src="tree_sample_pipeline_files/figure-html/beast_trees_preview-6.png" width="700"><img src="tree_sample_pipeline_files/figure-html/beast_trees_preview-7.png" width="700"><img src="tree_sample_pipeline_files/figure-html/beast_trees_preview-8.png" width="700"><img src="tree_sample_pipeline_files/figure-html/beast_trees_preview-9.png" width="700"><img src="tree_sample_pipeline_files/figure-html/beast_trees_preview-10.png" width="700"><img src="tree_sample_pipeline_files/figure-html/beast_trees_preview-11.png" width="700"><img src="tree_sample_pipeline_files/figure-html/beast_trees_preview-12.png" width="700"><img src="tree_sample_pipeline_files/figure-html/beast_trees_preview-13.png" width="700"><img src="tree_sample_pipeline_files/figure-html/beast_trees_preview-14.png" width="700"><img src="tree_sample_pipeline_files/figure-html/beast_trees_preview-15.png" width="700"><img src="tree_sample_pipeline_files/figure-html/beast_trees_preview-16.png" width="700"><img src="tree_sample_pipeline_files/figure-html/beast_trees_preview-17.png" width="700"><img src="tree_sample_pipeline_files/figure-html/beast_trees_preview-18.png" width="700"><img src="tree_sample_pipeline_files/figure-html/beast_trees_preview-19.png" width="700"><img src="tree_sample_pipeline_files/figure-html/beast_trees_preview-20.png" width="700"><img src="tree_sample_pipeline_files/figure-html/beast_trees_preview-21.png" width="700"><img src="tree_sample_pipeline_files/figure-html/beast_trees_preview-22.png" width="700"><img src="tree_sample_pipeline_files/figure-html/beast_trees_preview-23.png" width="700"><img src="tree_sample_pipeline_files/figure-html/beast_trees_preview-24.png" width="700"><img src="tree_sample_pipeline_files/figure-html/beast_trees_preview-25.png" width="700"><img src="tree_sample_pipeline_files/figure-html/beast_trees_preview-26.png" width="700"><img src="tree_sample_pipeline_files/figure-html/beast_trees_preview-27.png" width="700"><img src="tree_sample_pipeline_files/figure-html/beast_trees_preview-28.png" width="700"><img src="tree_sample_pipeline_files/figure-html/beast_trees_preview-29.png" width="700"><img src="tree_sample_pipeline_files/figure-html/beast_trees_preview-30.png" width="700"><img src="tree_sample_pipeline_files/figure-html/beast_trees_preview-31.png" width="700"><img src="tree_sample_pipeline_files/figure-html/beast_trees_preview-32.png" width="700"><img src="tree_sample_pipeline_files/figure-html/beast_trees_preview-33.png" width="700"><img src="tree_sample_pipeline_files/figure-html/beast_trees_preview-34.png" width="700"><img src="tree_sample_pipeline_files/figure-html/beast_trees_preview-35.png" width="700"><img src="tree_sample_pipeline_files/figure-html/beast_trees_preview-36.png" width="700"><img src="tree_sample_pipeline_files/figure-html/beast_trees_preview-37.png" width="700"><img src="tree_sample_pipeline_files/figure-html/beast_trees_preview-38.png" width="700"><img src="tree_sample_pipeline_files/figure-html/beast_trees_preview-39.png" width="700"><img src="tree_sample_pipeline_files/figure-html/beast_trees_preview-40.png" width="700"><img src="tree_sample_pipeline_files/figure-html/beast_trees_preview-41.png" width="700"><img src="tree_sample_pipeline_files/figure-html/beast_trees_preview-42.png" width="700"><img src="tree_sample_pipeline_files/figure-html/beast_trees_preview-43.png" width="700"><img src="tree_sample_pipeline_files/figure-html/beast_trees_preview-44.png" width="700"><img src="tree_sample_pipeline_files/figure-html/beast_trees_preview-45.png" width="700"><img src="tree_sample_pipeline_files/figure-html/beast_trees_preview-46.png" width="700"><img src="tree_sample_pipeline_files/figure-html/beast_trees_preview-47.png" width="700"><img src="tree_sample_pipeline_files/figure-html/beast_trees_preview-48.png" width="700"><img src="tree_sample_pipeline_files/figure-html/beast_trees_preview-49.png" width="700"><img src="tree_sample_pipeline_files/figure-html/beast_trees_preview-50.png" width="700"><img src="tree_sample_pipeline_files/figure-html/beast_trees_preview-51.png" width="700"><img src="tree_sample_pipeline_files/figure-html/beast_trees_preview-52.png" width="700"><img src="tree_sample_pipeline_files/figure-html/beast_trees_preview-53.png" width="700"><img src="tree_sample_pipeline_files/figure-html/beast_trees_preview-54.png" width="700"><img src="tree_sample_pipeline_files/figure-html/beast_trees_preview-55.png" width="700"><img src="tree_sample_pipeline_files/figure-html/beast_trees_preview-56.png" width="700"><img src="tree_sample_pipeline_files/figure-html/beast_trees_preview-57.png" width="700"><img src="tree_sample_pipeline_files/figure-html/beast_trees_preview-58.png" width="700"><img src="tree_sample_pipeline_files/figure-html/beast_trees_preview-59.png" width="700"><img src="tree_sample_pipeline_files/figure-html/beast_trees_preview-60.png" width="700"><img src="tree_sample_pipeline_files/figure-html/beast_trees_preview-61.png" width="700"><img src="tree_sample_pipeline_files/figure-html/beast_trees_preview-62.png" width="700"><img src="tree_sample_pipeline_files/figure-html/beast_trees_preview-63.png" width="700"><img src="tree_sample_pipeline_files/figure-html/beast_trees_preview-64.png" width="700"><img src="tree_sample_pipeline_files/figure-html/beast_trees_preview-65.png" width="700"><img src="tree_sample_pipeline_files/figure-html/beast_trees_preview-66.png" width="700"><img src="tree_sample_pipeline_files/figure-html/beast_trees_preview-67.png" width="700"><img src="tree_sample_pipeline_files/figure-html/beast_trees_preview-68.png" width="700"><img src="tree_sample_pipeline_files/figure-html/beast_trees_preview-69.png" width="700"><img src="tree_sample_pipeline_files/figure-html/beast_trees_preview-70.png" width="700"><img src="tree_sample_pipeline_files/figure-html/beast_trees_preview-71.png" width="700"><img src="tree_sample_pipeline_files/figure-html/beast_trees_preview-72.png" width="700"><img src="tree_sample_pipeline_files/figure-html/beast_trees_preview-73.png" width="700"><img src="tree_sample_pipeline_files/figure-html/beast_trees_preview-74.png" width="700"><img src="tree_sample_pipeline_files/figure-html/beast_trees_preview-75.png" width="700"><img src="tree_sample_pipeline_files/figure-html/beast_trees_preview-76.png" width="700"><img src="tree_sample_pipeline_files/figure-html/beast_trees_preview-77.png" width="700"><img src="tree_sample_pipeline_files/figure-html/beast_trees_preview-78.png" width="700"><img src="tree_sample_pipeline_files/figure-html/beast_trees_preview-79.png" width="700"><img src="tree_sample_pipeline_files/figure-html/beast_trees_preview-80.png" width="700"><img src="tree_sample_pipeline_files/figure-html/beast_trees_preview-81.png" width="700"><img src="tree_sample_pipeline_files/figure-html/beast_trees_preview-82.png" width="700"><img src="tree_sample_pipeline_files/figure-html/beast_trees_preview-83.png" width="700"><img src="tree_sample_pipeline_files/figure-html/beast_trees_preview-84.png" width="700"><img src="tree_sample_pipeline_files/figure-html/beast_trees_preview-85.png" width="700"><img src="tree_sample_pipeline_files/figure-html/beast_trees_preview-86.png" width="700"><img src="tree_sample_pipeline_files/figure-html/beast_trees_preview-87.png" width="700"><img src="tree_sample_pipeline_files/figure-html/beast_trees_preview-88.png" width="700"><img src="tree_sample_pipeline_files/figure-html/beast_trees_preview-89.png" width="700"><img src="tree_sample_pipeline_files/figure-html/beast_trees_preview-90.png" width="700"><img src="tree_sample_pipeline_files/figure-html/beast_trees_preview-91.png" width="700"><img src="tree_sample_pipeline_files/figure-html/beast_trees_preview-92.png" width="700"><img src="tree_sample_pipeline_files/figure-html/beast_trees_preview-93.png" width="700"><img src="tree_sample_pipeline_files/figure-html/beast_trees_preview-94.png" width="700"><img src="tree_sample_pipeline_files/figure-html/beast_trees_preview-95.png" width="700"><img src="tree_sample_pipeline_files/figure-html/beast_trees_preview-96.png" width="700"><img src="tree_sample_pipeline_files/figure-html/beast_trees_preview-97.png" width="700"><img src="tree_sample_pipeline_files/figure-html/beast_trees_preview-98.png" width="700"><img src="tree_sample_pipeline_files/figure-html/beast_trees_preview-99.png" width="700"><img src="tree_sample_pipeline_files/figure-html/beast_trees_preview-100.png" width="700"></p>
+<span>  <span class="va">p</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/ggtree/man/ggtree.html" class="external-link">ggtree</a></span><span class="op">(</span><span class="va">beast_trees_list</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">[</span><span class="va">i</span><span class="op">]</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/pkg/ggtree/man/theme_tree2.html" class="external-link">theme_tree2</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>plot.margin <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">margin</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">0</span><span class="op">)</span><span class="op">)</span></span>
+<span>  <span class="va">plots</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">p</span></span>
+<span><span class="op">}</span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/gridExtra/man/arrangeGrob.html" class="external-link">grid.arrange</a></span><span class="op">(</span>grobs <span class="op">=</span> <span class="va">plots</span>, ncol <span class="op">=</span> <span class="fl">10</span>, nrow <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span></code></pre></div>
+<p><img src="tree_sample_pipeline_files/figure-html/beast_trees_preview-1.png" width="700"></p>
 </div>
 <div class="section level2">
 <h2 id="running-transphylo-on-the-subsampled-trees">Running TransPhylo on the Subsampled Trees<a class="anchor" aria-label="anchor" href="#running-transphylo-on-the-subsampled-trees"></a>
@@ -465,7 +481,7 @@ can account for some of this uncertainty.</p>
 TransPhylo on each cluster. In the MCC trees tutorial, we ran the
 function <code>run_TransPhylo</code> only once; here, we will run it
 once for each cluster.</p>
-<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Make sure the tree names match the cluster dictionary names</span></span>
 <span><span class="co"># By naming them after the files they came from, then removing the</span></span>
 <span><span class="co"># file extension &amp; extras that BEAST2 adds to the filenames</span></span>
@@ -493,14 +509,31 @@ once for each cluster.</p>
 <span>                 prior_pi_b <span class="op">=</span> <span class="fl">19</span>,</span>
 <span>                 startNeg <span class="op">=</span> <span class="fl">1.48</span>,</span>
 <span>                 mcmcIterations <span class="op">=</span> <span class="fl">100000</span><span class="op">)</span></span>
-<span><span class="op">}</span>, mc.cores <span class="op">=</span> <span class="va">cores</span><span class="op">)</span></span></code></pre></div>
+<span><span class="op">}</span>, mc.cores <span class="op">=</span> <span class="va">cores</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">x</span><span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_along</a></span><span class="op">(</span><span class="va">beast_trees_list</span><span class="op">)</span>, <span class="kw">function</span><span class="op">(</span><span class="va">trees_sample_index</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="fu">beast2tpPipeline</span><span class="fu">:::</span><span class="fu"><a href="../reference/prep_for_TransPhylo.html">prep_for_TransPhylo</a></span><span class="op">(</span><span class="va">beast_trees_list</span><span class="op">[[</span><span class="va">trees_sample_index</span><span class="op">]</span><span class="op">]</span>,</span>
+<span>                 cluster_name <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">beast_trees_list</span><span class="op">)</span><span class="op">[</span><span class="va">trees_sample_index</span><span class="op">]</span>,</span>
+<span>                 type <span class="op">=</span> <span class="st">"trees_sample"</span>,</span>
+<span>                 cluster_dict <span class="op">=</span> <span class="va">all_cluster_assignments</span>,</span>
+<span>                 out_dir <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"tree_sample_example"</span>,</span>
+<span>                                       <span class="st">"TransPhylo"</span>,</span>
+<span>                                       package <span class="op">=</span> <span class="st">"beast2tpPipeline"</span><span class="op">)</span>,</span>
+<span>                 output_name <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"tp_res_"</span>,</span>
+<span>                                      <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">beast_trees_list</span><span class="op">)</span><span class="op">[</span><span class="va">trees_sample_index</span><span class="op">]</span><span class="op">)</span>,</span>
+<span>                 w.shape <span class="op">=</span> <span class="fl">10</span>,</span>
+<span>                 w.scale <span class="op">=</span> <span class="fl">0.1</span>,</span>
+<span>                 prior_pi_a <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>                 prior_pi_b <span class="op">=</span> <span class="fl">19</span>,</span>
+<span>                 startNeg <span class="op">=</span> <span class="fl">1.48</span>,</span>
+<span>                 mcmcIterations <span class="op">=</span> <span class="fl">100000</span><span class="op">)</span><span class="op">}</span><span class="op">)</span></span></code></pre></div>
 <p>The code above will save both the TransPhylo result itself and the
 posterior probabilities for each cluster. The TransPhylo results are
 large RDS files, so they are not included with the package. The infector
 probabilities are saved in the specified <code>out_dir</code>.95_HPD</p>
 <p>We can look at the distribution of assigned probabilities, as in the
 MCC trees tutorial:</p>
-<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Read in prob_source files</span></span></code></pre></div>
 </div>
 <div class="section level2">

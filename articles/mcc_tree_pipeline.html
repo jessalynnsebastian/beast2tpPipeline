@@ -105,6 +105,8 @@ Sample of BEAST2 Iterations (Posterior Trees).</p>
 <p>First, load the package with <code>library</code>.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://jessalynnsebastian.github.io/beast2tpPipeline/">beast2tpPipeline</a></span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## Error in get(paste0(generic, ".", class), envir = get_method_env()) : </span></span>
+<span><span class="co">##   object 'type_sum.accel' not found</span></span></code></pre>
 </div>
 <div class="section level2">
 <h2 id="data-for-this-example">Data for this Example<a class="anchor" aria-label="anchor" href="#data-for-this-example"></a>
@@ -126,7 +128,7 @@ transmit TB to someone else.</p>
 <h2 id="creating-single-nucleotide-polymorphism-snp-clusters">Creating Single Nucleotide Polymorphism (SNP) Clusters<a class="anchor" aria-label="anchor" href="#creating-single-nucleotide-polymorphism-snp-clusters"></a>
 </h2>
 <p>First, read the fasta files and the metadata into <code>R</code>.</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">fasta_files</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.files.html" class="external-link">list.files</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"kopanyo"</span>, package <span class="op">=</span> <span class="st">"beast2tpPipeline"</span><span class="op">)</span>,</span>
 <span>                          pattern <span class="op">=</span> <span class="st">".fasta"</span>, full.names <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="va">tb_sequences</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="va">fasta_files</span>, <span class="fu">ape</span><span class="fu">::</span><span class="va"><a href="https://rdrr.io/pkg/ape/man/read.dna.html" class="external-link">read.dna</a></span>, format <span class="op">=</span> <span class="st">"fasta"</span>,</span>
@@ -136,7 +138,7 @@ transmit TB to someone else.</p>
 <span>                       pattern <span class="op">=</span> <span class="st">".csv"</span>, full.names <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="va">metadata</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv</a></span><span class="op">(</span><span class="va">metadata</span><span class="op">)</span></span></code></pre></div>
 <p>We can take a peek at the data:</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">metadata</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">##   SampleID Lineage genderf1 agenew hivfinal_new gMixture  collectdt smokef1</span></span>
 <span><span class="co">## 1 BTB-1139       1        1     52            1        0 2014-07-30       1</span></span>
@@ -152,7 +154,7 @@ transmit TB to someone else.</p>
 <span><span class="co">## 4         1              2            1.1.2</span></span>
 <span><span class="co">## 5         1              2            1.1.2</span></span>
 <span><span class="co">## 6         1              2            1.1.2</span></span></code></pre>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">metadata</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## [1] 1426   11</span></span></code></pre>
 <p>Notice that we have 1426 sequences and corresponding metadata. It
@@ -174,7 +176,7 @@ latter is still available in the function.</p>
 <p>To assign sequences to their clusters based on SNPs, we will use
 <code>assign_snp_clusters</code>, which is a wrapper around some
 <code>transcluster</code> functions.</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Get collection dates by lineage</span></span>
 <span><span class="va">collectdts</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/split.html" class="external-link">split</a></span><span class="op">(</span><span class="va">metadata</span>, <span class="va">metadata</span><span class="op">$</span><span class="va">Lineage</span><span class="op">)</span></span>
 <span><span class="co"># Create named vectors of dates, as required by the function</span></span>
@@ -202,7 +204,7 @@ you already have a distance matrix saved, you can pass it to
 <code>assign_snp_clusters</code> with the <code>dist_matrix</code>
 argument.</p>
 <p>Now we have:</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Rename clusters to include lineage</span></span>
 <span><span class="va">cluster_assignments</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_along</a></span><span class="op">(</span><span class="va">cluster_assignments</span><span class="op">)</span>, <span class="kw">function</span><span class="op">(</span><span class="va">i</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="va">cluster_assignments</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">cluster_name</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"lineage"</span>, <span class="va">i</span>, <span class="st">"_"</span>, <span class="va">cluster_assignments</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">cluster_name</span><span class="op">)</span></span>
@@ -255,7 +257,7 @@ BEAST2).</p>
 with fewer than 8 SNPs. We also add constant sites to the sequences, to
 deal with ascertainment bias in BEAST2 due to the fact that we are only
 keeping the SNPs.</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># For each lineage, use the cluster assignments to put the sequences</span></span>
 <span><span class="co"># into clusters</span></span>
 <span><span class="va">snp_matrices</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_along</a></span><span class="op">(</span><span class="va">tb_sequences</span><span class="op">)</span>, <span class="kw">function</span><span class="op">(</span><span class="va">lineage_index</span><span class="op">)</span> <span class="op">{</span></span>
@@ -339,7 +341,7 @@ template:</p>
 for us) for the cluster, the name of the cluster, the sampling dates for
 the sequences in the cluster, and a directory to output the xml files
 to.</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># For each lineage, write the xml files for all clusters</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/invisible.html" class="external-link">invisible</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_along</a></span><span class="op">(</span><span class="va">snp_matrices</span><span class="op">)</span>, <span class="kw">function</span><span class="op">(</span><span class="va">lineage_index</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="co"># Get list of clusters for the lineage</span></span>
@@ -367,7 +369,7 @@ you have installed and where it is installed to.</p>
 package. This is not necessary, but it can speed up the process if you
 have multiple cores available. Note that this will not work on Windows,
 but there are other ways to parallelize on Windows machines.</p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">cores</span> <span class="op">&lt;-</span> <span class="fu">parallel</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/parallel/detectCores.html" class="external-link">detectCores</a></span><span class="op">(</span><span class="op">)</span> <span class="op">/</span> <span class="fl">2</span></span>
 <span><span class="va">input_xml</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.files.html" class="external-link">list.files</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"mcc_trees_example"</span>, <span class="st">"BEAST2"</span>,</span>
 <span>                                    package <span class="op">=</span> <span class="st">"beast2tpPipeline"</span><span class="op">)</span>,</span>
@@ -380,7 +382,7 @@ mixing of the MCMC, we can make sure the effective sample size (ESS) is
 above 200 for all parameters. We can do this using the
 <code>ess_checks</code> function, which calls on the package
 <code>tracerer</code>.</p>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">beast_logs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.files.html" class="external-link">list.files</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"mcc_trees_example"</span>, <span class="st">"BEAST2"</span>,</span>
 <span>                                     package <span class="op">=</span> <span class="st">"beast2tpPipeline"</span><span class="op">)</span>,</span>
 <span>                         pattern <span class="op">=</span> <span class="st">"\\.log"</span>, full.names <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
@@ -435,7 +437,7 @@ samples are values from the real line. We will use the
 calls command-line TreeAnnotator from the BEAST2 suite, so you may need
 to change the <code>treeannotator_path</code> argument depending on
 where TreeAnnotator is installed.</p>
-<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">trees_files</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.files.html" class="external-link">list.files</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"mcc_trees_example"</span>, <span class="st">"BEAST2"</span>,</span>
 <span>                                      package <span class="op">=</span> <span class="st">"beast2tpPipeline"</span><span class="op">)</span>,</span>
 <span>                          pattern <span class="op">=</span> <span class="st">".trees"</span>, full.names <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
@@ -447,8 +449,6 @@ where TreeAnnotator is installed.</p>
 <p>This function outputs nothing, but MCC trees are saved to the
 specified output directory.</p>
 <p>The MCC trees look like this, for example:</p>
-<pre><code><span><span class="co">## Error in get(paste0(generic, ".", class), envir = get_method_env()) : </span></span>
-<span><span class="co">##   object 'type_sum.accel' not found</span></span></code></pre>
 <p><img src="mcc_tree_pipeline_files/figure-html/mcc_tree_preview-1.png" width="700"></p>
 <p>where there are associated error bars for each node and uncertainty
 in the tree topology, but this will not be accounted for by
