@@ -24,15 +24,18 @@ Imports:
     TransPhylo,
     coda,
     tracerer,
-    lubridate
+    lubridate,
+    rstan
 Suggests: 
     knitr,
     rmarkdown,
     devtools,
     parallel,
     ggplot2,
+    gridExtra,
     treeio,
-    ggtree
+    ggtree,
+    snowfall
 Remotes: JamesStimson/transcluster
 VignetteBuilder: knitr
 URL: https://jessalynnsebastian.github.io/beast2tpPipeline/

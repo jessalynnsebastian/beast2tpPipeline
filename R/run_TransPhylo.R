@@ -47,7 +47,54 @@ run_TransPhylo <- function(trees,
                            out_dir = "TransPhylo",
                            output_name = "tp_res",
                            ...) {
-  # Some TP arguments are set in this function - ignore
+
+  # Prep data for TP run
+  args <- prep_for_TransPhylo(trees = trees,
+                              cluster_name = cluster_name,
+                              type = type,
+                              cluster_dict = cluster_dict,
+                              out_dir = out_dir,
+                              output_name = output_name,
+                              ...)
+
+  # Run TransPhylo multitree
+  tp_res <- do.call(TransPhylo::infer_multittree_share_param, args)
+
+  # Save resTransPhylo object(s)
+  if (!dir.exists(out_dir)) dir.create(out_dir)
+  # For multitree, TransPhylo forgets that it's supposed to be a
+  # list of resTransPhylo objects
+  tp_res <- lapply(tp_res, function(res) {
+    class(res) <- "resTransPhylo"
+    res
+  })
+  saveRDS(tp_res, file = file.path(out_dir,
+                                   paste0(output_name, ".rds")))
+
+  # Get prob_source for all samples
+  prob_source <- get_prob_source(tp_res, type = type)
+
+  # And save prob_source
+  output_name <- paste0(output_name, "_prob_source.rds")
+  saveRDS(prob_source, file = file.path(out_dir, output_name))
+  return(prob_source)
+}
+
+#' @title Prepare Data for TransPhylo
+#'
+#' @inheritParams run_TransPhylo
+#'
+#' @returns Arguments to be passed into
+#' TransPhylo::infer_multittree_share_param().
+
+prep_for_TransPhylo <- function(trees,
+                                cluster_name = NULL,
+                                type = c("mcctrees", "trees_sample"),
+                                cluster_dict,
+                                out_dir = "TransPhylo",
+                                output_name = "tp_res",
+                                ...) {
+    # Some TP arguments are set in this function - ignore
   # if they are passed in
   if ("ptree_lst" %in% names(list(...))) {
     warning("Ignoring user-provided input ptree_list, which is set in this function.")
@@ -93,7 +140,8 @@ run_TransPhylo <- function(trees,
   } else if (type == "trees_sample") {
     # Pull the correct cluster from the cluster dictionary
     # & get date of last sample
-    date_last_sample <- cluster_dict$collectdt[cluster_dict$cluster_name == cluster_name, ]
+    date_last_sample <- cluster_dict[cluster_dict$cluster_name == cluster_name, ]
+    date_last_sample <- max(date_last_sample$collectdt)
     # Convert to ptrees
     ptree_list <- lapply(trees, FUN = function(tree) {
       TransPhylo::ptreeFromPhylo(tree, date_last_sample)
@@ -106,21 +154,21 @@ run_TransPhylo <- function(trees,
   }
   args$ptree_lst <- ptree_list
   args$dateT <- date_last_sample + 0.01
-  # Run TransPhylo multitree
-  tp_res <- do.call(TransPhylo::infer_multittree_share_param, args)
+  return(args)
+}
 
-  # Save resTransPhylo object(s)
-  if (!dir.exists(out_dir)) dir.create(out_dir)
-  # For multitree, TransPhylo forgets that it's supposed to be a
-  # list of resTransPhylo objects
-  tp_res <- lapply(tp_res, function(res) {
-    class(res) <- "resTransPhylo"
-    res
-  })
-  saveRDS(tp_res, file = file.path(out_dir,
-                                   paste0(output_name, ".rds")))
+#' @title Get Infector Probabilities from TransPhylo Results
+#'
+#' @param tp_res A list of resTransPhylo objects.
+#' @param type A character string specifying the type of trees that were
+#' analyzed. Can be "mcctrees" or "trees_sample".
+#'
+#' @returns A data frame containing the probability of each sample being an
+#' infection source.
 
-  # Get prob source for all samples & save
+get_prob_source <- function(tp_res,
+                            type = c("mcctrees", "trees_sample")) {
+    # Get prob source for all samples & save
   names <- lapply(tp_res, function(res) {
     res[[1]]$ctree$nam
   })
@@ -140,8 +188,5 @@ run_TransPhylo <- function(trees,
                              data = prob_source, FUN = mean)
   }
   colnames(prob_source) <- c("SampleID", "prob_source")
-  # And save the vector
-  output_name <- paste0(output_name, "_prob_source.rds")
-  saveRDS(prob_source, file = file.path(out_dir, output_name))
   return(prob_source)
 }

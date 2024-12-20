@@ -274,12 +274,17 @@ beast_trees_list <- lapply(beast_trees_files, function(trees_file) {
 For each cluster, this gives us:
 
 ```{r beast_trees_preview}
+library(gridExtra)
+library(ggtree)
 beast_trees_list[[1]]
 
-par(mfrow = c(10, 10))
+# Plot the first cluster's tree sample
+plots <- list()
 for (i in 1:100) {
-  plot(beast_trees_list[[1]][i], show.tip.label = FALSE)
+  p <- ggtree(beast_trees_list[[1]][i]) + theme_tree2() + theme(plot.margin = margin(0, 0, 0, 0))
+  plots[[i]] <- p
 }
+grid.arrange(grobs = plots, ncol = 10, nrow = 10)
 ```
 
 # Running TransPhylo on the Subsampled Trees
@@ -316,6 +321,23 @@ parallel::mclapply(seq_along(beast_trees_list), function(trees_sample_index) {
                  startNeg = 1.48,
                  mcmcIterations = 100000)
 }, mc.cores = cores)
+
+x<-lapply(seq_along(beast_trees_list), function(trees_sample_index) {
+  beast2tpPipeline:::prep_for_TransPhylo(beast_trees_list[[trees_sample_index]],
+                 cluster_name = names(beast_trees_list)[trees_sample_index],
+                 type = "trees_sample",
+                 cluster_dict = all_cluster_assignments,
+                 out_dir = system.file("tree_sample_example",
+                                       "TransPhylo",
+                                       package = "beast2tpPipeline"),
+                 output_name = paste0("tp_res_",
+                                      names(beast_trees_list)[trees_sample_index]),
+                 w.shape = 10,
+                 w.scale = 0.1,
+                 prior_pi_a = 1,
+                 prior_pi_b = 19,
+                 startNeg = 1.48,
+                 mcmcIterations = 100000)})
 ```
 
 The code above will save both the TransPhylo result itself and the posterior probabilities
