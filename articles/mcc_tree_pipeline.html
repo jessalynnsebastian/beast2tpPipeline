@@ -248,11 +248,11 @@ argument.</p>
 <span><span class="co">## 4  BTB-1007 lineage4_cluster4 2014-05-02</span></span>
 <span><span class="co">## 5  BTB-1009 lineage4_cluster5 2014-05-05</span></span>
 <span><span class="co">## 6  BTB-1010 lineage4_cluster6 2014-05-05</span></span></code></pre>
-<p>Next, we will create the actual BEAST2 clusters using the
-<code>create_BEAST2_clusters</code> function. We will take the
-sequences, split them into separate objects, and keep only the SNPs
-(sites that are the same across all sequences will not matter to
-BEAST2).</p>
+<p>Next, we will create the actual BEAST2 clusters containing the
+genetic data using the <code>create_BEAST2_clusters</code> function. We
+will take the sequences, split them into separate objects, and keep only
+the SNPs (sites that are the same across all sequences will not matter
+to BEAST2).</p>
 <p>We will discard clusters with fewer than 4 sequences, and clusters
 with fewer than 8 SNPs. We also add constant sites to the sequences, to
 deal with ascertainment bias in BEAST2 due to the fact that we are only
@@ -548,7 +548,7 @@ We will use the <code>regression</code> function to do so.</p>
 <code class="sourceCode R"><span><span class="co"># Get dataframe with covariates for regression</span></span>
 <span><span class="va">cleaned_data</span> <span class="op">&lt;-</span> <span class="va">metadata</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"SampleID"</span>, <span class="st">"hivfinal_new"</span><span class="op">)</span><span class="op">]</span></span>
 <span><span class="va">cleaned_data</span> <span class="op">&lt;-</span> <span class="va">cleaned_data</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/stats/complete.cases.html" class="external-link">complete.cases</a></span><span class="op">(</span><span class="va">cleaned_data</span><span class="op">)</span>, <span class="op">]</span></span>
-<span><span class="va">cleaned_data</span><span class="op">$</span><span class="va">hivfinal_new</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">as.factor</a></span><span class="op">(</span><span class="va">cleaned_data</span><span class="op">$</span><span class="va">hivfinal_new</span> <span class="op">-</span> <span class="fl">1</span><span class="op">)</span></span>
+<span><span class="va">cleaned_data</span><span class="op">$</span><span class="va">hivfinal_new</span> <span class="op">&lt;-</span> <span class="va">cleaned_data</span><span class="op">$</span><span class="va">hivfinal_new</span> <span class="op">-</span> <span class="fl">1</span></span>
 <span><span class="co"># Run a linear model with the probabilities from TransPhylo</span></span>
 <span><span class="va">mdl</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/regression.html">regression</a></span><span class="op">(</span>method <span class="op">=</span> <span class="st">"linear"</span>,</span>
 <span>                  cleaned_data <span class="op">=</span> <span class="va">cleaned_data</span>,</span>
@@ -559,12 +559,11 @@ We will use the <code>regression</code> function to do so.</p>
 function will automatically remove rows with missing values.</p>
 <div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Get dataframe with covariates for regression, add age and gender</span></span>
-<span><span class="va">cleaned_data</span> <span class="op">&lt;-</span> <span class="va">metadata</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"SampleID"</span>, <span class="st">"hivfinal_new"</span>, <span class="st">"agenew"</span>, <span class="st">"genderf1"</span><span class="op">)</span><span class="op">]</span></span>
+<span><span class="va">cleaned_data</span> <span class="op">&lt;-</span> <span class="va">metadata</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"SampleID"</span>, <span class="st">"hivfinal_new"</span>, <span class="st">"genderf1"</span>,</span>
+<span>                             <span class="st">"tb_everf3"</span>, <span class="st">"smokef1"</span>, <span class="st">"alcohol_excess"</span><span class="op">)</span><span class="op">]</span></span>
 <span><span class="va">cleaned_data</span> <span class="op">&lt;-</span> <span class="va">cleaned_data</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/stats/complete.cases.html" class="external-link">complete.cases</a></span><span class="op">(</span><span class="va">cleaned_data</span><span class="op">)</span>, <span class="op">]</span></span>
-<span><span class="va">cleaned_data</span><span class="op">$</span><span class="va">hivfinal_new</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">as.factor</a></span><span class="op">(</span><span class="va">cleaned_data</span><span class="op">$</span><span class="va">hivfinal_new</span> <span class="op">-</span> <span class="fl">1</span><span class="op">)</span></span>
-<span><span class="va">cleaned_data</span><span class="op">$</span><span class="va">genderf1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">cleaned_data</span><span class="op">$</span><span class="va">genderf1</span>,</span>
-<span>                                levels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span><span class="op">)</span>,</span>
-<span>                                labels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"M"</span>, <span class="st">"F"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">cleaned_data</span><span class="op">[</span>, <span class="fl">2</span><span class="op">:</span><span class="fl">6</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/apply.html" class="external-link">apply</a></span><span class="op">(</span><span class="va">cleaned_data</span><span class="op">[</span>, <span class="fl">2</span><span class="op">:</span><span class="fl">6</span><span class="op">]</span>, <span class="fl">2</span>,</span>
+<span>                             <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">-</span> <span class="fl">1</span><span class="op">)</span></span>
 <span><span class="co"># Run a linear model with the probabilities from TransPhylo</span></span>
 <span><span class="va">mdl</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/regression.html">regression</a></span><span class="op">(</span>method <span class="op">=</span> <span class="st">"linear"</span>,</span>
 <span>                  cleaned_data <span class="op">=</span> <span class="va">cleaned_data</span>,</span>
@@ -576,20 +575,22 @@ function will automatically remove rows with missing values.</p>
 <span><span class="co">## </span></span>
 <span><span class="co">## Residuals:</span></span>
 <span><span class="co">##      Min       1Q   Median       3Q      Max </span></span>
-<span><span class="co">## -0.26801 -0.17625 -0.14314  0.00812  0.87396 </span></span>
+<span><span class="co">## -0.22528 -0.17311 -0.15239  0.01174  0.83791 </span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## Coefficients:</span></span>
-<span><span class="co">##                Estimate Std. Error t value Pr(&gt;|t|)   </span></span>
-<span><span class="co">## (Intercept)    0.251241   0.077408   3.246  0.00134 **</span></span>
-<span><span class="co">## hivfinal_new1  0.019518   0.041655   0.469  0.63981   </span></span>
-<span><span class="co">## agenew        -0.002502   0.001745  -1.434  0.15291   </span></span>
-<span><span class="co">## genderf1F     -0.019601   0.042283  -0.464  0.64339   </span></span>
+<span><span class="co">##                 Estimate Std. Error t value Pr(&gt;|t|)  </span></span>
+<span><span class="co">## (Intercept)     0.126011   0.057209   2.203   0.0286 *</span></span>
+<span><span class="co">## hivfinal_new    0.039487   0.040426   0.977   0.3297  </span></span>
+<span><span class="co">## genderf1       -0.011014   0.043591  -0.253   0.8007  </span></span>
+<span><span class="co">## tb_everf3       0.007609   0.049439   0.154   0.8778  </span></span>
+<span><span class="co">## smokef1         0.052170   0.051089   1.021   0.3082  </span></span>
+<span><span class="co">## alcohol_excess -0.020719   0.049316  -0.420   0.6748  </span></span>
 <span><span class="co">## ---</span></span>
 <span><span class="co">## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span></span>
 <span><span class="co">## </span></span>
-<span><span class="co">## Residual standard error: 0.3058 on 236 degrees of freedom</span></span>
-<span><span class="co">## Multiple R-squared:  0.01246,    Adjusted R-squared:  -9.254e-05 </span></span>
-<span><span class="co">## F-statistic: 0.9926 on 3 and 236 DF,  p-value: 0.397</span></span></code></pre>
+<span><span class="co">## Residual standard error: 0.3077 on 234 degrees of freedom</span></span>
+<span><span class="co">## Multiple R-squared:  0.008643,   Adjusted R-squared:  -0.01254 </span></span>
+<span><span class="co">## F-statistic: 0.408 on 5 and 234 DF,  p-value: 0.843</span></span></code></pre>
 <p>Alternatively, a probability threshold can be set to mark individuals
 as infectors or non-infectors, and a logistic regression may be run.
 This is done by setting the <code>method</code> argument in
@@ -602,8 +603,65 @@ threshold.</p>
 <span><span class="va">mdl_logistic</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/regression.html">regression</a></span><span class="op">(</span>method <span class="op">=</span> <span class="st">"logistic"</span>,</span>
 <span>                           cleaned_data <span class="op">=</span> <span class="va">cleaned_data</span>,</span>
 <span>                           prob_source <span class="op">=</span> <span class="va">prob_source</span>,</span>
-<span>                           prob_cutoff <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span></span>
+<span>                           prob_cutoff <span class="op">=</span> <span class="fl">0.6</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">mdl_logistic</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## </span></span>
+<span><span class="co">## Call:</span></span>
+<span><span class="co">## glm(formula = tp_source ~ ., family = "binomial", data = cleaned_data)</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Coefficients:</span></span>
+<span><span class="co">##                Estimate Std. Error z value Pr(&gt;|z|)    </span></span>
+<span><span class="co">## (Intercept)    -2.57277    0.61177  -4.205 2.61e-05 ***</span></span>
+<span><span class="co">## hivfinal_new    0.61646    0.40656   1.516    0.129    </span></span>
+<span><span class="co">## genderf1       -0.03172    0.42411  -0.075    0.940    </span></span>
+<span><span class="co">## tb_everf3      -0.10814    0.50432  -0.214    0.830    </span></span>
+<span><span class="co">## smokef1         1.03882    0.55876   1.859    0.063 .  </span></span>
+<span><span class="co">## alcohol_excess -0.52863    0.47714  -1.108    0.268    </span></span>
+<span><span class="co">## ---</span></span>
+<span><span class="co">## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## (Dispersion parameter for binomial family taken to be 1)</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">##     Null deviance: 184.70  on 239  degrees of freedom</span></span>
+<span><span class="co">## Residual deviance: 178.82  on 234  degrees of freedom</span></span>
+<span><span class="co">## AIC: 190.82</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Number of Fisher Scoring iterations: 5</span></span></code></pre>
+<div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Get odds ratios (adjusted for other covariates)</span></span>
+<span><span class="va">adj_odds_ratios</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>est <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp</a></span><span class="op">(</span><span class="va">mdl_logistic</span><span class="op">$</span><span class="va">coefficients</span><span class="op">)</span>,</span>
+<span>                              row.names <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">mdl_logistic</span><span class="op">$</span><span class="va">coefficients</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">adj_odds_ratios</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span><span class="va">adj_odds_ratios</span>, <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/confint.html" class="external-link">confint</a></span><span class="op">(</span><span class="va">mdl_logistic</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## Waiting for profiling to be done...</span></span></code></pre>
+<div class="sourceCode" id="cb34"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">adj_odds_ratios</span></span></code></pre></div>
+<pre><code><span><span class="co">##                       est      2.5 %    97.5 %</span></span>
+<span><span class="co">## (Intercept)    0.07632382 0.02069694 0.2330317</span></span>
+<span><span class="co">## hivfinal_new   1.85236668 0.84517253 4.2139991</span></span>
+<span><span class="co">## genderf1       0.96877762 0.41671834 2.2236658</span></span>
+<span><span class="co">## tb_everf3      0.89750391 0.34946563 2.6086441</span></span>
+<span><span class="co">## smokef1        2.82587567 0.99353282 9.1007819</span></span>
+<span><span class="co">## alcohol_excess 0.58941296 0.23284878 1.5307532</span></span></code></pre>
+<p>Since there is some misclassification in the infector/non-infector
+status, we can also run a logistic regression with misclassification
+using a simple Bayesian method. This is done by setting the
+<code>method</code> argument in <code>regression</code> to
+“bayesian_logistic_misclass”.</p>
+<div class="sourceCode" id="cb36"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Require that all covariates have columns of type numeric</span></span>
+<span><span class="va">numeric_data</span> <span class="op">&lt;-</span> <span class="va">cleaned_data</span></span>
+<span><span class="va">numeric_data</span><span class="op">$</span><span class="va">agenew</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="va">numeric_data</span><span class="op">$</span><span class="va">agenew</span><span class="op">)</span></span>
+<span><span class="va">numeric_data</span><span class="op">$</span><span class="va">genderf1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="va">numeric_data</span><span class="op">$</span><span class="va">genderf1</span><span class="op">)</span> <span class="op">-</span> <span class="fl">1</span></span>
+<span><span class="va">numeric_data</span><span class="op">$</span><span class="va">hivfinal_new</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="va">numeric_data</span><span class="op">$</span><span class="va">hivfinal_new</span><span class="op">)</span> <span class="op">-</span> <span class="fl">1</span></span>
+<span><span class="va">samples_logistic</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/regression.html">regression</a></span><span class="op">(</span>method <span class="op">=</span> <span class="st">"bayesian_logistic_misclass"</span>,</span>
+<span>                               cleaned_data <span class="op">=</span> <span class="va">numeric_data</span>,</span>
+<span>                               prob_source <span class="op">=</span> <span class="va">prob_source</span>,</span>
+<span>                               prob_cutoff <span class="op">=</span> <span class="fl">0.6</span>,</span>
+<span>                               sensitivity <span class="op">=</span> <span class="fl">0.28</span>,</span>
+<span>                               specificity <span class="op">=</span> <span class="fl">0.97</span><span class="op">)</span></span>
+<span><span class="co"># Pull the samples for the hiv coefficient, which are the log adjusted</span></span>
+<span><span class="co"># odds ratios for the logistic regression</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp</a></span><span class="op">(</span><span class="va">samples_logistic</span><span class="op">$</span><span class="va">beta</span><span class="op">[</span><span class="fl">1</span>, <span class="op">]</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="exploration-of-the-pipeline">Exploration of the Pipeline<a class="anchor" aria-label="anchor" href="#exploration-of-the-pipeline"></a>
@@ -613,23 +671,23 @@ and explore the impact of those changes on the results. For example,
 suppose we want to change the sampling fraction prior for TransPhylo,
 get new results, do linear regression with those results, and compare
 them to the old results.</p>
-<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb37"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Run TransPhylo on the MCC trees with a new sampling fraction prior</span></span>
 <span><span class="co"># Using same MCC trees we have already read in</span></span>
-<span><span class="va">prob_source</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/run_TransPhylo.html">run_TransPhylo</a></span><span class="op">(</span><span class="va">mcc_trees</span>,</span>
-<span>                              type <span class="op">=</span> <span class="st">"mcctrees"</span>,</span>
-<span>                              cluster_dict <span class="op">=</span> <span class="va">all_cluster_assignments</span>,</span>
-<span>                              out_dir <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"mcc_trees_example"</span>,</span>
-<span>                                                    <span class="st">"TransPhylo"</span>,</span>
-<span>                                                    package <span class="op">=</span> <span class="st">"beast2tpPipeline"</span><span class="op">)</span>,</span>
-<span>                              output_name <span class="op">=</span> <span class="st">"tp_res_changed_sampling_frac"</span>,</span>
-<span>                              w.shape <span class="op">=</span> <span class="fl">10</span>,</span>
-<span>                              w.scale <span class="op">=</span> <span class="fl">0.1</span>,</span>
-<span>                              prior_pi_a <span class="op">=</span> <span class="fl">26</span>,</span>
-<span>                              prior_pi_b <span class="op">=</span> <span class="fl">74</span>,</span>
-<span>                              share <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"neg"</span>, <span class="st">"off.r"</span><span class="op">)</span>,</span>
-<span>                              startNeg <span class="op">=</span> <span class="fl">1.48</span>,</span>
-<span>                              mcmcIterations <span class="op">=</span> <span class="fl">100000</span><span class="op">)</span></span>
+<span><span class="va">prob_source_new_pi</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/run_TransPhylo.html">run_TransPhylo</a></span><span class="op">(</span><span class="va">mcc_trees</span>,</span>
+<span>                                     type <span class="op">=</span> <span class="st">"mcctrees"</span>,</span>
+<span>                                     cluster_dict <span class="op">=</span> <span class="va">all_cluster_assignments</span>,</span>
+<span>                                     out_dir <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"mcc_trees_example"</span>,</span>
+<span>                                                           <span class="st">"TransPhylo"</span>,</span>
+<span>                                                           package <span class="op">=</span> <span class="st">"beast2tpPipeline"</span><span class="op">)</span>,</span>
+<span>                                     output_name <span class="op">=</span> <span class="st">"tp_res_changed_sampling_frac"</span>,</span>
+<span>                                     w.shape <span class="op">=</span> <span class="fl">10</span>,</span>
+<span>                                     w.scale <span class="op">=</span> <span class="fl">0.1</span>,</span>
+<span>                                     prior_pi_a <span class="op">=</span> <span class="fl">26</span>,</span>
+<span>                                     prior_pi_b <span class="op">=</span> <span class="fl">74</span>,</span>
+<span>                                     share <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"neg"</span>, <span class="st">"off.r"</span><span class="op">)</span>,</span>
+<span>                                     startNeg <span class="op">=</span> <span class="fl">1.48</span>,</span>
+<span>                                     mcmcIterations <span class="op">=</span> <span class="fl">100000</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Look at some traceplots again</span></span>
 <span><span class="va">transphylo_res</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="va">transphylo_res_file</span><span class="op">)</span></span>
@@ -638,37 +696,74 @@ them to the old results.</p>
 <p>Now we have the updated probabilities, and we can compare their
 distribution to their distribution under the old sampling fraction
 prior.</p>
-<div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb38"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/hist.html" class="external-link">hist</a></span><span class="op">(</span><span class="va">prob_source</span><span class="op">$</span><span class="va">prob</span>, main <span class="op">=</span> <span class="st">"Distribution of TransPhylo Probabilities"</span>,</span>
 <span>     xlab <span class="op">=</span> <span class="st">"Probability of being an infector"</span>, col <span class="op">=</span> <span class="st">"lightblue"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="mcc_tree_pipeline_files/figure-html/prob_source_histogram_pi2-1.png" width="700"></p>
-<p>We can also redo our linear (or logistic) regression with these new
-probabilities.</p>
-<div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">mdl_new</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/regression.html">regression</a></span><span class="op">(</span>method <span class="op">=</span> <span class="st">"linear"</span>,</span>
-<span>                      cleaned_data <span class="op">=</span> <span class="va">cleaned_data</span>,</span>
-<span>                      prob_source <span class="op">=</span> <span class="va">prob_source</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">mdl_new</span><span class="op">)</span></span></code></pre></div>
+<p>We can look at individual changes in probabilities via a scatterplot,
+where each point represents a sample, the x-axis gives the probability
+under the old sampling fraction prior, and the y-axis gives the
+probability under the new sampling fraction prior.</p>
+<div class="sourceCode" id="cb39"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">prob_source_new_pi</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"SampleID"</span>, <span class="st">"prob_source_new_pi"</span><span class="op">)</span></span>
+<span><span class="va">prob_source_pairs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/merge.html" class="external-link">merge</a></span><span class="op">(</span><span class="va">prob_source</span>, <span class="va">prob_source_new_pi</span>, by <span class="op">=</span> <span class="st">"SampleID"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">prob_source_pairs</span><span class="op">$</span><span class="va">prob_source</span>, <span class="va">prob_source_pairs</span><span class="op">$</span><span class="va">prob_source_new_pi</span>,</span>
+<span>     xlab <span class="op">=</span> <span class="st">"Prob Source Under Beta(1,19) Sampling Fraction Prior"</span>, ylab <span class="op">=</span> <span class="st">"Prob Source Under Beta(26,74) Sampling Fraction Prior"</span>,</span>
+<span>     main <span class="op">=</span> <span class="st">"Comparison of TransPhylo Probabilities of Being an Infection Source"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/abline.html" class="external-link">abline</a></span><span class="op">(</span>a <span class="op">=</span> <span class="fl">0</span>, b <span class="op">=</span> <span class="fl">1</span>, col <span class="op">=</span> <span class="st">"darkgreen"</span><span class="op">)</span></span>
+<span><span class="va">spline_fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/smooth.spline.html" class="external-link">smooth.spline</a></span><span class="op">(</span><span class="va">prob_source_pairs</span><span class="op">$</span><span class="va">prob_source</span>,</span>
+<span>                            <span class="va">prob_source_pairs</span><span class="op">$</span><span class="va">prob_source_new_pi</span>,</span>
+<span>                            df <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/lines.html" class="external-link">lines</a></span><span class="op">(</span><span class="va">spline_fit</span>, col <span class="op">=</span> <span class="st">"darkgreen"</span>, lty <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code></pre></div>
+<p><img src="mcc_tree_pipeline_files/figure-html/prob_source_scatterplot-1.png" width="700"></p>
+<p>We can also redo our logistic (or other) regression with these new
+probabilities, and look at the new odds ratios.</p>
+<div class="sourceCode" id="cb40"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">prob_source_new_pi</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"SampleID"</span>, <span class="st">"prob_source"</span><span class="op">)</span></span>
+<span><span class="va">mdl_logistic_new</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/regression.html">regression</a></span><span class="op">(</span>method <span class="op">=</span> <span class="st">"logistic"</span>,</span>
+<span>                               cleaned_data <span class="op">=</span> <span class="va">cleaned_data</span>,</span>
+<span>                               prob_source <span class="op">=</span> <span class="va">prob_source_new_pi</span>,</span>
+<span>                               prob_cutoff <span class="op">=</span> <span class="fl">0.6</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">mdl_logistic_new</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## </span></span>
 <span><span class="co">## Call:</span></span>
-<span><span class="co">## lm(formula = prob_source ~ ., data = cleaned_data)</span></span>
-<span><span class="co">## </span></span>
-<span><span class="co">## Residuals:</span></span>
-<span><span class="co">##      Min       1Q   Median       3Q      Max </span></span>
-<span><span class="co">## -0.29485 -0.19383 -0.15594  0.04651  0.86442 </span></span>
+<span><span class="co">## glm(formula = tp_source ~ ., family = "binomial", data = cleaned_data)</span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## Coefficients:</span></span>
-<span><span class="co">##                Estimate Std. Error t value Pr(&gt;|t|)    </span></span>
-<span><span class="co">## (Intercept)    0.289779   0.081382   3.561 0.000447 ***</span></span>
-<span><span class="co">## hivfinal_new1  0.013507   0.043793   0.308 0.758025    </span></span>
-<span><span class="co">## agenew        -0.002889   0.001835  -1.575 0.116653    </span></span>
-<span><span class="co">## genderf1F     -0.023246   0.044454  -0.523 0.601513    </span></span>
+<span><span class="co">##                Estimate Std. Error z value Pr(&gt;|z|)    </span></span>
+<span><span class="co">## (Intercept)     -2.1106     0.5318  -3.969 7.22e-05 ***</span></span>
+<span><span class="co">## hivfinal_new     0.3901     0.3611   1.080    0.280    </span></span>
+<span><span class="co">## genderf1         0.1623     0.3811   0.426    0.670    </span></span>
+<span><span class="co">## tb_everf3       -0.0882     0.4450  -0.198    0.843    </span></span>
+<span><span class="co">## smokef1          0.4950     0.4820   1.027    0.304    </span></span>
+<span><span class="co">## alcohol_excess  -0.1397     0.4434  -0.315    0.753    </span></span>
 <span><span class="co">## ---</span></span>
 <span><span class="co">## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span></span>
 <span><span class="co">## </span></span>
-<span><span class="co">## Residual standard error: 0.3215 on 236 degrees of freedom</span></span>
-<span><span class="co">## Multiple R-squared:  0.01331,    Adjusted R-squared:  0.0007666 </span></span>
-<span><span class="co">## F-statistic: 1.061 on 3 and 236 DF,  p-value: 0.3663</span></span></code></pre>
+<span><span class="co">## (Dispersion parameter for binomial family taken to be 1)</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">##     Null deviance: 213.02  on 239  degrees of freedom</span></span>
+<span><span class="co">## Residual deviance: 210.53  on 234  degrees of freedom</span></span>
+<span><span class="co">## AIC: 222.53</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Number of Fisher Scoring iterations: 4</span></span></code></pre>
+<div class="sourceCode" id="cb42"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Get odds ratios (adjusted for other covariates)</span></span>
+<span><span class="va">adj_odds_ratios_new</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>est <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp</a></span><span class="op">(</span><span class="va">mdl_logistic_new</span><span class="op">$</span><span class="va">coefficients</span><span class="op">)</span>,</span>
+<span>                                  row.names <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">mdl_logistic_new</span><span class="op">$</span><span class="va">coefficients</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">adj_odds_ratios_new</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span><span class="va">adj_odds_ratios_new</span>, <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/confint.html" class="external-link">confint</a></span><span class="op">(</span><span class="va">mdl_logistic_new</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## Waiting for profiling to be done...</span></span></code></pre>
+<div class="sourceCode" id="cb44"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">adj_odds_ratios_new</span></span></code></pre></div>
+<pre><code><span><span class="co">##                      est      2.5 %    97.5 %</span></span>
+<span><span class="co">## (Intercept)    0.1211602 0.03975307 0.3245642</span></span>
+<span><span class="co">## hivfinal_new   1.4771205 0.73109189 3.0362124</span></span>
+<span><span class="co">## genderf1       1.1761967 0.55457392 2.4899201</span></span>
+<span><span class="co">## tb_everf3      0.9155799 0.39564919 2.3125728</span></span>
+<span><span class="co">## smokef1        1.6405469 0.65534985 4.4001744</span></span>
+<span><span class="co">## alcohol_excess 0.8696210 0.36854637 2.1198239</span></span></code></pre>
+<p>And we can compare the odds ratio for HIV status from the two models:
+<img src="mcc_tree_pipeline_files/figure-html/compare_odds_ratios-1.png" width="700"></p>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>
