@@ -146,7 +146,7 @@ cluster_assignments <- lapply(seq_along(cluster_assignments), function(i) {
 lapply(cluster_assignments, head)
 ```
 
-Next, we will create the actual BEAST2 clusters using the `create_BEAST2_clusters` function. We will take
+Next, we will create the actual BEAST2 clusters containing the genetic data using the `create_BEAST2_clusters` function. We will take
 the sequences, split them into separate objects, and keep only the SNPs (sites that are the same
 across all sequences will not matter to BEAST2).
 
@@ -420,7 +420,7 @@ with the probabilities as the response variable and HIV status as the predictor.
 # Get dataframe with covariates for regression
 cleaned_data <- metadata[, c("SampleID", "hivfinal_new")]
 cleaned_data <- cleaned_data[complete.cases(cleaned_data), ]
-cleaned_data$hivfinal_new <- as.factor(cleaned_data$hivfinal_new - 1)
+cleaned_data$hivfinal_new <- cleaned_data$hivfinal_new - 1
 # Run a linear model with the probabilities from TransPhylo
 mdl <- regression(method = "linear",
                   cleaned_data = cleaned_data,
@@ -433,12 +433,11 @@ remove rows with missing values.
 
 ```{r add_covariates}
 # Get dataframe with covariates for regression, add age and gender
-cleaned_data <- metadata[, c("SampleID", "hivfinal_new", "agenew", "genderf1")]
+cleaned_data <- metadata[, c("SampleID", "hivfinal_new", "genderf1",
+                             "tb_everf3", "smokef1", "alcohol_excess")]
 cleaned_data <- cleaned_data[complete.cases(cleaned_data), ]
-cleaned_data$hivfinal_new <- as.factor(cleaned_data$hivfinal_new - 1)
-cleaned_data$genderf1 <- factor(cleaned_data$genderf1,
-                                levels = c(1, 2),
-                                labels = c("M", "F"))
+cleaned_data[, 2:6] <- apply(cleaned_data[, 2:6], 2,
+                             function(x) as.numeric(x) - 1)
 # Run a linear model with the probabilities from TransPhylo
 mdl <- regression(method = "linear",
                   cleaned_data = cleaned_data,
@@ -449,15 +448,41 @@ summary(mdl)
 Alternatively, a probability threshold can be set to mark individuals as infectors or non-infectors, and a logistic regression
 may be run. This is done by setting the `method` argument in `regression` to `"logistic"` and specifying a threshold.
 
-```{r logistic, eval = F}
+```{r logistic}
 # Run a logistic model with the probabilities from TransPhylo
 # Set the probability threshold to 0.5, where prob >= 0.5 is
 # considered an infector
 mdl_logistic <- regression(method = "logistic",
                            cleaned_data = cleaned_data,
                            prob_source = prob_source,
-                           prob_cutoff = 0.5)
+                           prob_cutoff = 0.6)
 summary(mdl_logistic)
+
+# Get odds ratios (adjusted for other covariates)
+adj_odds_ratios <- data.frame(est = exp(mdl_logistic$coefficients),
+                              row.names = names(mdl_logistic$coefficients))
+adj_odds_ratios <- cbind(adj_odds_ratios, exp(confint(mdl_logistic)))
+adj_odds_ratios
+```
+
+Since there is some misclassification in the infector/non-infector status, we can also run a logistic regression with misclassification
+using a simple Bayesian method. This is done by setting the `method` argument in `regression` to "bayesian_logistic_misclass".
+
+```{r logistic_misclass, eval = F}
+# Require that all covariates have columns of type numeric
+numeric_data <- cleaned_data
+numeric_data$agenew <- as.numeric(numeric_data$agenew)
+numeric_data$genderf1 <- as.numeric(numeric_data$genderf1) - 1
+numeric_data$hivfinal_new <- as.numeric(numeric_data$hivfinal_new) - 1
+samples_logistic <- regression(method = "bayesian_logistic_misclass",
+                               cleaned_data = numeric_data,
+                               prob_source = prob_source,
+                               prob_cutoff = 0.6,
+                               sensitivity = 0.28,
+                               specificity = 0.97)
+# Pull the samples for the hiv coefficient, which are the log adjusted
+# odds ratios for the logistic regression
+summary(exp(samples_logistic$beta[1, ]))
 ```
 
 # Exploration of the Pipeline
@@ -469,20 +494,20 @@ do linear regression with those results, and compare them to the old results.
 ```{r change_sampling_fraction, eval = F}
 # Run TransPhylo on the MCC trees with a new sampling fraction prior
 # Using same MCC trees we have already read in
-prob_source <- run_TransPhylo(mcc_trees,
-                              type = "mcctrees",
-                              cluster_dict = all_cluster_assignments,
-                              out_dir = system.file("mcc_trees_example",
-                                                    "TransPhylo",
-                                                    package = "beast2tpPipeline"),
-                              output_name = "tp_res_changed_sampling_frac",
-                              w.shape = 10,
-                              w.scale = 0.1,
-                              prior_pi_a = 26,
-                              prior_pi_b = 74,
-                              share = c("neg", "off.r"),
-                              startNeg = 1.48,
-                              mcmcIterations = 100000)
+prob_source_new_pi <- run_TransPhylo(mcc_trees,
+                                     type = "mcctrees",
+                                     cluster_dict = all_cluster_assignments,
+                                     out_dir = system.file("mcc_trees_example",
+                                                           "TransPhylo",
+                                                           package = "beast2tpPipeline"),
+                                     output_name = "tp_res_changed_sampling_frac",
+                                     w.shape = 10,
+                                     w.scale = 0.1,
+                                     prior_pi_a = 26,
+                                     prior_pi_b = 74,
+                                     share = c("neg", "off.r"),
+                                     startNeg = 1.48,
+                                     mcmcIterations = 100000)
 
 # Look at some traceplots again
 transphylo_res <- readRDS(transphylo_res_file)
@@ -495,9 +520,9 @@ knitr::include_graphics("images/example_traceplots_pi2.svg")
 
 ```{r get_prob_source_changed_sampling_frac, echo = F}
 # Run a linear model with the new probabilities from TransPhylo
-prob_source <- readRDS(system.file("mcc_trees_example", "TransPhylo",
-                                   "tp_res_changed_sampling_frac_prob_source.rds",
-                                   package = "beast2tpPipeline"))
+prob_source_new_pi <- readRDS(system.file("mcc_trees_example", "TransPhylo",
+                                          "tp_res_changed_sampling_frac_prob_source.rds",
+                                          package = "beast2tpPipeline"))
 ```
 
 Now we have the updated probabilities, and we can compare their distribution to their distribution under the old
@@ -508,11 +533,49 @@ hist(prob_source$prob, main = "Distribution of TransPhylo Probabilities",
      xlab = "Probability of being an infector", col = "lightblue")
 ```
 
-We can also redo our linear (or logistic) regression with these new probabilities.
+We can look at individual changes in probabilities via a scatterplot, where each point represents a sample, the x-axis
+gives the probability under the old sampling fraction prior, and the y-axis gives the probability under the new sampling
+fraction prior.
+
+```{r prob_source_scatterplot}
+colnames(prob_source_new_pi) <- c("SampleID", "prob_source_new_pi")
+prob_source_pairs <- merge(prob_source, prob_source_new_pi, by = "SampleID")
+plot(prob_source_pairs$prob_source, prob_source_pairs$prob_source_new_pi,
+     xlab = "Prob Source Under Beta(1,19) Sampling Fraction Prior", ylab = "Prob Source Under Beta(26,74) Sampling Fraction Prior",
+     main = "Comparison of TransPhylo Probabilities of Being an Infection Source")
+abline(a = 0, b = 1, col = "darkgreen")
+spline_fit <- smooth.spline(prob_source_pairs$prob_source,
+                            prob_source_pairs$prob_source_new_pi,
+                            df = 5)
+lines(spline_fit, col = "darkgreen", lty = 2)
+```
+
+We can also redo our logistic (or other) regression with these new probabilities, and look at the new odds ratios.
 
 ```{r model_changed_sampling_frac}
-mdl_new <- regression(method = "linear",
-                      cleaned_data = cleaned_data,
-                      prob_source = prob_source)
-summary(mdl_new)
+colnames(prob_source_new_pi) <- c("SampleID", "prob_source")
+mdl_logistic_new <- regression(method = "logistic",
+                               cleaned_data = cleaned_data,
+                               prob_source = prob_source_new_pi,
+                               prob_cutoff = 0.6)
+summary(mdl_logistic_new)
+
+# Get odds ratios (adjusted for other covariates)
+adj_odds_ratios_new <- data.frame(est = exp(mdl_logistic_new$coefficients),
+                                  row.names = names(mdl_logistic_new$coefficients))
+adj_odds_ratios_new <- cbind(adj_odds_ratios_new, exp(confint(mdl_logistic_new)))
+adj_odds_ratios_new
+```
+
+And we can compare the odds ratio for HIV status from the two models:
+```{r compare_odds_ratios, echo = F}
+# Plot the odds ratios for HIV status from the two models
+old_or <- adj_odds_ratios["hivfinal_new", ]
+new_or <- adj_odds_ratios_new["hivfinal_new", ]
+plot(1:2, c(old_or[1], new_or[1]), xlim = c(0.5, 2.5), ylim = range(c(old_or, new_or)), pch = 16,
+  xlab = "", ylab = "Odds Ratio", xaxt = "n", main = "Comparison of Odds Ratios for HIV Status")
+axis(1, at = 1:2, labels = c("Beta(1,19) Model", "Beta(26,74) Model"))
+arrows(1, old_or[[2]], 1, old_or[[3]], angle = 90, code = 3, length = 0.1)
+arrows(2, new_or[[2]], 2, new_or[[3]], angle = 90, code = 3, length = 0.1)
+abline(h = 1, col = "blue", lty = 2)
 ```

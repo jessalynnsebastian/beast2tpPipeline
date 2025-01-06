@@ -46,6 +46,7 @@ regression <- function(method = c("logistic", "linear",
       stop("Must provide a probability cutoff for logistic regression")
     }
     cleaned_data$tp_source <- as.factor(cleaned_data$prob_source > prob_cutoff)
+    cleaned_data <- cleaned_data[, !(names(cleaned_data) %in% "prob_source")]
     return(glm(tp_source ~ ., data = cleaned_data, family = "binomial"))
   }
   if (method == "bayesian_logistic_misclass") {
