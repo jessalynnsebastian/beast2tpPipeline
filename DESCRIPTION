@@ -34,8 +34,7 @@ Suggests:
     ggplot2,
     gridExtra,
     treeio,
-    ggtree,
-    snowfall
+    ggtree
 Remotes: JamesStimson/transcluster
 VignetteBuilder: knitr
 URL: https://jessalynnsebastian.github.io/beast2tpPipeline/
