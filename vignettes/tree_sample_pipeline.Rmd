@@ -321,33 +321,85 @@ parallel::mclapply(seq_along(beast_trees_list), function(trees_sample_index) {
                  startNeg = 1.48,
                  mcmcIterations = 100000)
 }, mc.cores = cores)
-
-x<-lapply(seq_along(beast_trees_list), function(trees_sample_index) {
-  beast2tpPipeline:::prep_for_TransPhylo(beast_trees_list[[trees_sample_index]],
-                 cluster_name = names(beast_trees_list)[trees_sample_index],
-                 type = "trees_sample",
-                 cluster_dict = all_cluster_assignments,
-                 out_dir = system.file("tree_sample_example",
-                                       "TransPhylo",
-                                       package = "beast2tpPipeline"),
-                 output_name = paste0("tp_res_",
-                                      names(beast_trees_list)[trees_sample_index]),
-                 w.shape = 10,
-                 w.scale = 0.1,
-                 prior_pi_a = 1,
-                 prior_pi_b = 19,
-                 startNeg = 1.48,
-                 mcmcIterations = 100000)})
 ```
 
 The code above will save both the TransPhylo result itself and the posterior probabilities
 for each cluster. The TransPhylo results are large RDS files, so they are not included with 
-the package. The infector probabilities are saved in the specified `out_dir`.95_HPD
+the package. The infector probabilities are saved in the `tree_sample_example` directory in the
+package.
+
+> **Note**: A couple of the clusters did not run successfully, so those have been excluded
+from the below results. Why this happened should be further explored when time permits.
 
 We can look at the distribution of assigned probabilities, as in the MCC trees tutorial:
 
-```{r prob_distributions}
+```{r prob_distribution}
 # Read in prob_source files
+prob_source_files <- list.files(system.file("trees_sample_example",
+                                            "TransPhylo",
+                                            package = "beast2tpPipeline"),
+                                full.names = TRUE)
+prob_source_list <- lapply(prob_source_files, readRDS)
+prob_source <- do.call(rbind, prob_source_list)
+hist(prob_source$prob, main = "Distribution of TransPhylo Probabilities",
+     xlab = "Probability of being an infector", col = "lightblue")
+```
+
+And directly compare the assigned probabilities with a scatterplot:
+
+```{r prob_source_scatterplot}
+prob_source_mcc <- readRDS(system.file("mcc_trees_example", "TransPhylo",
+                                       "tp_res_prob_source.rds",
+                                       package = "beast2tpPipeline"))
+colnames(prob_source_mcc) <- c("SampleID", "prob_source_mcc")
+prob_source_pairs <- merge(prob_source, prob_source_mcc, by = "SampleID")
+plot(prob_source_pairs$prob_source, prob_source_pairs$prob_source_mcc,
+     xlab = "Prob Source Using BEAST2 Tree Sample Method (100 Trees)", ylab = "Prob Source Using BEAST2 MCC Trees",
+     main = "Comparison of TransPhylo Probabilities of Being an Infection Source")
+abline(a = 0, b = 1, col = "darkgreen")
+spline_fit <- smooth.spline(prob_source_pairs$prob_source,
+              prob_source_pairs$prob_source_mcc,
+              spar = 1.75)
+lines(spline_fit, col = "darkgreen", lty = 2)
 ```
 
 # Regression with TransPhylo Results
+
+As in the MCC tree pipeline, we can regress the probabilities assigned by TransPhylo on some covariates. Here
+we will use the Bayesian method of handling misclassification.
+
+```{r regression}
+# Get dataframe with covariates for regression, add age and gender;
+# for this method, ensure all are numeric
+cleaned_data <- metadata[, c("SampleID", "hivfinal_new", "genderf1",
+                             "tb_everf3", "smokef1", "alcohol_excess")]
+cleaned_data <- cleaned_data[complete.cases(cleaned_data), ]
+cleaned_data[, 2:6] <- apply(cleaned_data[, 2:6], 2,
+                             function(x) as.numeric(x) - 1)
+samples_logistic <- regression(method = "bayesian_logistic_misclass",
+                               cleaned_data = cleaned_data,
+                               prob_source = prob_source,
+                               prob_cutoff = 0.6,
+                               sensitivity = 0.28,
+                               specificity = 0.97)
+# Pull the samples for the hiv coefficient, which are the log adjusted
+# odds ratios (AORs) for the logistic regression
+summary(exp(samples_logistic$beta[1, ]))
+```
+
+And we can compare these posterior AOR samples to those obtained using the MCC trees method:
+
+```{r regression_comparison}
+samples_logistic_mcc <- regression(method = "bayesian_logistic_misclass",
+                                   cleaned_data = cleaned_data,
+                                   prob_source = prob_source,
+                                   prob_cutoff = 0.6,
+                                   sensitivity = 0.28,
+                                   specificity = 0.97)
+# Pull the samples for the exponentiated coef and compare
+boxplot(exp(samples_logistic$beta[1, ]), exp(samples_logistic_mcc$beta[1, ]),
+        names = c("Tree Sample Method", "MCC Trees Method"),
+        main = "Comparison of Posterior AOR Samples",
+        ylab = "Adjusted Odds Ratio of Transmission of TB with/without HIV",
+        col = c("lightblue", "lightgreen"))
+```

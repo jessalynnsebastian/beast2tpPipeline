@@ -450,7 +450,7 @@ may be run. This is done by setting the `method` argument in `regression` to `"l
 
 ```{r logistic}
 # Run a logistic model with the probabilities from TransPhylo
-# Set the probability threshold to 0.5, where prob >= 0.5 is
+# Set the probability threshold to 0.6, where prob >= 0.6 is
 # considered an infector
 mdl_logistic <- regression(method = "logistic",
                            cleaned_data = cleaned_data,
