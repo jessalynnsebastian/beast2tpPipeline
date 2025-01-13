@@ -105,8 +105,6 @@ Sample of BEAST2 Iterations (Posterior Trees).</p>
 <p>First, load the package with <code>library</code>.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://jessalynnsebastian.github.io/beast2tpPipeline/">beast2tpPipeline</a></span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## Error in get(paste0(generic, ".", class), envir = get_method_env()) : </span></span>
-<span><span class="co">##   object 'type_sum.accel' not found</span></span></code></pre>
 </div>
 <div class="section level2">
 <h2 id="data-for-this-example">Data for this Example<a class="anchor" aria-label="anchor" href="#data-for-this-example"></a>
@@ -128,7 +126,7 @@ transmit TB to someone else.</p>
 <h2 id="creating-single-nucleotide-polymorphism-snp-clusters">Creating Single Nucleotide Polymorphism (SNP) Clusters<a class="anchor" aria-label="anchor" href="#creating-single-nucleotide-polymorphism-snp-clusters"></a>
 </h2>
 <p>First, read the fasta files and the metadata into <code>R</code>.</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">fasta_files</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.files.html" class="external-link">list.files</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"kopanyo"</span>, package <span class="op">=</span> <span class="st">"beast2tpPipeline"</span><span class="op">)</span>,</span>
 <span>                          pattern <span class="op">=</span> <span class="st">".fasta"</span>, full.names <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="va">tb_sequences</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="va">fasta_files</span>, <span class="fu">ape</span><span class="fu">::</span><span class="va"><a href="https://rdrr.io/pkg/ape/man/read.dna.html" class="external-link">read.dna</a></span>, format <span class="op">=</span> <span class="st">"fasta"</span>,</span>
@@ -138,7 +136,7 @@ transmit TB to someone else.</p>
 <span>                       pattern <span class="op">=</span> <span class="st">".csv"</span>, full.names <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="va">metadata</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv</a></span><span class="op">(</span><span class="va">metadata</span><span class="op">)</span></span></code></pre></div>
 <p>We can take a peek at the data:</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">metadata</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">##   SampleID Lineage genderf1 agenew hivfinal_new gMixture  collectdt smokef1</span></span>
 <span><span class="co">## 1 BTB-1139       1        1     52            1        0 2014-07-30       1</span></span>
@@ -154,7 +152,7 @@ transmit TB to someone else.</p>
 <span><span class="co">## 4         1              2            1.1.2</span></span>
 <span><span class="co">## 5         1              2            1.1.2</span></span>
 <span><span class="co">## 6         1              2            1.1.2</span></span></code></pre>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">metadata</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## [1] 1426   11</span></span></code></pre>
 <p>Notice that we have 1426 sequences and corresponding metadata. It
@@ -176,7 +174,7 @@ latter is still available in the function.</p>
 <p>To assign sequences to their clusters based on SNPs, we will use
 <code>assign_snp_clusters</code>, which is a wrapper around some
 <code>transcluster</code> functions.</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Get collection dates by lineage</span></span>
 <span><span class="va">collectdts</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/split.html" class="external-link">split</a></span><span class="op">(</span><span class="va">metadata</span>, <span class="va">metadata</span><span class="op">$</span><span class="va">Lineage</span><span class="op">)</span></span>
 <span><span class="co"># Create named vectors of dates, as required by the function</span></span>
@@ -204,7 +202,7 @@ you already have a distance matrix saved, you can pass it to
 <code>assign_snp_clusters</code> with the <code>dist_matrix</code>
 argument.</p>
 <p>Now we have:</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Rename clusters to include lineage</span></span>
 <span><span class="va">cluster_assignments</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_along</a></span><span class="op">(</span><span class="va">cluster_assignments</span><span class="op">)</span>, <span class="kw">function</span><span class="op">(</span><span class="va">i</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="va">cluster_assignments</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">cluster_name</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"lineage"</span>, <span class="va">i</span>, <span class="st">"_"</span>, <span class="va">cluster_assignments</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">cluster_name</span><span class="op">)</span></span>
@@ -257,7 +255,7 @@ to BEAST2).</p>
 with fewer than 8 SNPs. We also add constant sites to the sequences, to
 deal with ascertainment bias in BEAST2 due to the fact that we are only
 keeping the SNPs.</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># For each lineage, use the cluster assignments to put the sequences</span></span>
 <span><span class="co"># into clusters</span></span>
 <span><span class="va">snp_matrices</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_along</a></span><span class="op">(</span><span class="va">tb_sequences</span><span class="op">)</span>, <span class="kw">function</span><span class="op">(</span><span class="va">lineage_index</span><span class="op">)</span> <span class="op">{</span></span>
@@ -341,7 +339,7 @@ template:</p>
 for us) for the cluster, the name of the cluster, the sampling dates for
 the sequences in the cluster, and a directory to output the xml files
 to.</p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># For each lineage, write the xml files for all clusters</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/invisible.html" class="external-link">invisible</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_along</a></span><span class="op">(</span><span class="va">snp_matrices</span><span class="op">)</span>, <span class="kw">function</span><span class="op">(</span><span class="va">lineage_index</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="co"># Get list of clusters for the lineage</span></span>
@@ -369,7 +367,7 @@ you have installed and where it is installed to.</p>
 package. This is not necessary, but it can speed up the process if you
 have multiple cores available. Note that this will not work on Windows,
 but there are other ways to parallelize on Windows machines.</p>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">cores</span> <span class="op">&lt;-</span> <span class="fu">parallel</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/parallel/detectCores.html" class="external-link">detectCores</a></span><span class="op">(</span><span class="op">)</span> <span class="op">/</span> <span class="fl">2</span></span>
 <span><span class="va">input_xml</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.files.html" class="external-link">list.files</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"mcc_trees_example"</span>, <span class="st">"BEAST2"</span>,</span>
 <span>                                    package <span class="op">=</span> <span class="st">"beast2tpPipeline"</span><span class="op">)</span>,</span>
@@ -382,7 +380,7 @@ mixing of the MCMC, we can make sure the effective sample size (ESS) is
 above 200 for all parameters. We can do this using the
 <code>ess_checks</code> function, which calls on the package
 <code>tracerer</code>.</p>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">beast_logs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.files.html" class="external-link">list.files</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"mcc_trees_example"</span>, <span class="st">"BEAST2"</span>,</span>
 <span>                                     package <span class="op">=</span> <span class="st">"beast2tpPipeline"</span><span class="op">)</span>,</span>
 <span>                         pattern <span class="op">=</span> <span class="st">"\\.log"</span>, full.names <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
@@ -437,7 +435,7 @@ samples are values from the real line. We will use the
 calls command-line TreeAnnotator from the BEAST2 suite, so you may need
 to change the <code>treeannotator_path</code> argument depending on
 where TreeAnnotator is installed.</p>
-<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">trees_files</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.files.html" class="external-link">list.files</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"mcc_trees_example"</span>, <span class="st">"BEAST2"</span>,</span>
 <span>                                      package <span class="op">=</span> <span class="st">"beast2tpPipeline"</span><span class="op">)</span>,</span>
 <span>                          pattern <span class="op">=</span> <span class="st">".trees"</span>, full.names <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
@@ -469,7 +467,7 @@ data frame (BEAST2 does some slight renaming of its outputs
 automatically), and then run TransPhylo. We can run TransPhylo on all of
 the trees at once, sharing a couple of parameters that are common across
 the trees and can be estimated simultaneously.</p>
-<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Read the trees and manipulate the names to make sure they match</span></span>
 <span><span class="co"># the names in cluster_assignments</span></span>
 <span><span class="va">mcc_trees_files</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.files.html" class="external-link">list.files</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"mcc_trees_example"</span>,</span>
@@ -506,7 +504,7 @@ TransPhylo results (the <code>resTransPhylo</code> object output by
 mixing of the TransPhylo run, but it is probably more useful to look at
 the traceplots for estimated parameters. Below is an example of how to
 do this, using a TransPhylo function with only the first cluster.</p>
-<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">transphylo_res</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="va">transphylo_res_file</span><span class="op">)</span></span>
 <span><span class="fu">TransPhylo</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/TransPhylo/man/plotTraces.html" class="external-link">plotTraces</a></span><span class="op">(</span><span class="va">transphylo_res</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span></code></pre></div>
 <p><img src="images%2Fexample_traceplots.svg"><!-- --></p>
@@ -517,7 +515,7 @@ colors, where each color represents an individual and asterisks
 represent transmission events. In TransPhylo this object is called a
 <code>ctree</code>, or combined phylogenetic/transmission tree (“colored
 tree”).</p>
-<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">medoid</span> <span class="op">&lt;-</span> <span class="fu">TransPhylo</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/TransPhylo/man/medTTree.html" class="external-link">medTTree</a></span><span class="op">(</span><span class="va">transphylo_res</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span>
 <span><span class="fu">TransPhylo</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/TransPhylo/man/plotCTree.html" class="external-link">plotCTree</a></span><span class="op">(</span><span class="va">medoid</span><span class="op">)</span></span></code></pre></div>
 <p><img src="images%2Fmedttree.svg"><!-- --></p>
@@ -526,13 +524,13 @@ occurring in at least some fraction of the posterior samples. This tree
 will not necessarily be a tree that is in the posterior samples. It can
 be plotted with <code>plot</code>. In TransPhylo this object is called a
 <code>ttree</code>, or transmission tree.</p>
-<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">cons</span> <span class="op">&lt;-</span> <span class="fu">TransPhylo</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/TransPhylo/man/consTTree.html" class="external-link">consTTree</a></span><span class="op">(</span><span class="va">transphylo_res</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">cons</span><span class="op">)</span></span></code></pre></div>
 <p><img src="images%2Fconsttree.svg"><!-- --></p>
 <p>We may also be interested in looking at the distribution of the
 probabilities assigned by TransPhylo:</p>
-<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/hist.html" class="external-link">hist</a></span><span class="op">(</span><span class="va">prob_source</span><span class="op">$</span><span class="va">prob</span>, main <span class="op">=</span> <span class="st">"Distribution of TransPhylo Probabilities"</span>,</span>
 <span>     xlab <span class="op">=</span> <span class="st">"Probability of being an infector"</span>, col <span class="op">=</span> <span class="st">"lightblue"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="mcc_tree_pipeline_files/figure-html/prob_source_histogram-1.png" width="700"></p>
@@ -544,7 +542,7 @@ probabilities assigned by TransPhylo:</p>
 assigned by TransPhylo. Here we will run a linear regression with the
 probabilities as the response variable and HIV status as the predictor.
 We will use the <code>regression</code> function to do so.</p>
-<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Get dataframe with covariates for regression</span></span>
 <span><span class="va">cleaned_data</span> <span class="op">&lt;-</span> <span class="va">metadata</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"SampleID"</span>, <span class="st">"hivfinal_new"</span><span class="op">)</span><span class="op">]</span></span>
 <span><span class="va">cleaned_data</span> <span class="op">&lt;-</span> <span class="va">cleaned_data</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/stats/complete.cases.html" class="external-link">complete.cases</a></span><span class="op">(</span><span class="va">cleaned_data</span><span class="op">)</span>, <span class="op">]</span></span>
@@ -557,7 +555,7 @@ We will use the <code>regression</code> function to do so.</p>
 <p>We can add more covariates by adding columns to the
 <code>cleaned_data</code> data frame. The <code>regression</code>
 function will automatically remove rows with missing values.</p>
-<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Get dataframe with covariates for regression, add age and gender</span></span>
 <span><span class="va">cleaned_data</span> <span class="op">&lt;-</span> <span class="va">metadata</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"SampleID"</span>, <span class="st">"hivfinal_new"</span>, <span class="st">"genderf1"</span>,</span>
 <span>                             <span class="st">"tb_everf3"</span>, <span class="st">"smokef1"</span>, <span class="st">"alcohol_excess"</span><span class="op">)</span><span class="op">]</span></span>
@@ -596,9 +594,9 @@ as infectors or non-infectors, and a logistic regression may be run.
 This is done by setting the <code>method</code> argument in
 <code>regression</code> to <code>"logistic"</code> and specifying a
 threshold.</p>
-<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Run a logistic model with the probabilities from TransPhylo</span></span>
-<span><span class="co"># Set the probability threshold to 0.5, where prob &gt;= 0.5 is</span></span>
+<span><span class="co"># Set the probability threshold to 0.6, where prob &gt;= 0.6 is</span></span>
 <span><span class="co"># considered an infector</span></span>
 <span><span class="va">mdl_logistic</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/regression.html">regression</a></span><span class="op">(</span>method <span class="op">=</span> <span class="st">"logistic"</span>,</span>
 <span>                           cleaned_data <span class="op">=</span> <span class="va">cleaned_data</span>,</span>
@@ -627,13 +625,13 @@ threshold.</p>
 <span><span class="co">## AIC: 190.82</span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## Number of Fisher Scoring iterations: 5</span></span></code></pre>
-<div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Get odds ratios (adjusted for other covariates)</span></span>
 <span><span class="va">adj_odds_ratios</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>est <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp</a></span><span class="op">(</span><span class="va">mdl_logistic</span><span class="op">$</span><span class="va">coefficients</span><span class="op">)</span>,</span>
 <span>                              row.names <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">mdl_logistic</span><span class="op">$</span><span class="va">coefficients</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">adj_odds_ratios</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span><span class="va">adj_odds_ratios</span>, <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/confint.html" class="external-link">confint</a></span><span class="op">(</span><span class="va">mdl_logistic</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Waiting for profiling to be done...</span></span></code></pre>
-<div class="sourceCode" id="cb34"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">adj_odds_ratios</span></span></code></pre></div>
 <pre><code><span><span class="co">##                       est      2.5 %    97.5 %</span></span>
 <span><span class="co">## (Intercept)    0.07632382 0.02069694 0.2330317</span></span>
@@ -647,7 +645,7 @@ status, we can also run a logistic regression with misclassification
 using a simple Bayesian method. This is done by setting the
 <code>method</code> argument in <code>regression</code> to
 “bayesian_logistic_misclass”.</p>
-<div class="sourceCode" id="cb36"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb35"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Require that all covariates have columns of type numeric</span></span>
 <span><span class="va">numeric_data</span> <span class="op">&lt;-</span> <span class="va">cleaned_data</span></span>
 <span><span class="va">numeric_data</span><span class="op">$</span><span class="va">agenew</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="va">numeric_data</span><span class="op">$</span><span class="va">agenew</span><span class="op">)</span></span>
@@ -671,7 +669,7 @@ and explore the impact of those changes on the results. For example,
 suppose we want to change the sampling fraction prior for TransPhylo,
 get new results, do linear regression with those results, and compare
 them to the old results.</p>
-<div class="sourceCode" id="cb37"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb36"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Run TransPhylo on the MCC trees with a new sampling fraction prior</span></span>
 <span><span class="co"># Using same MCC trees we have already read in</span></span>
 <span><span class="va">prob_source_new_pi</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/run_TransPhylo.html">run_TransPhylo</a></span><span class="op">(</span><span class="va">mcc_trees</span>,</span>
@@ -696,7 +694,7 @@ them to the old results.</p>
 <p>Now we have the updated probabilities, and we can compare their
 distribution to their distribution under the old sampling fraction
 prior.</p>
-<div class="sourceCode" id="cb38"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb37"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/hist.html" class="external-link">hist</a></span><span class="op">(</span><span class="va">prob_source</span><span class="op">$</span><span class="va">prob</span>, main <span class="op">=</span> <span class="st">"Distribution of TransPhylo Probabilities"</span>,</span>
 <span>     xlab <span class="op">=</span> <span class="st">"Probability of being an infector"</span>, col <span class="op">=</span> <span class="st">"lightblue"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="mcc_tree_pipeline_files/figure-html/prob_source_histogram_pi2-1.png" width="700"></p>
@@ -704,7 +702,7 @@ prior.</p>
 where each point represents a sample, the x-axis gives the probability
 under the old sampling fraction prior, and the y-axis gives the
 probability under the new sampling fraction prior.</p>
-<div class="sourceCode" id="cb39"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb38"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">prob_source_new_pi</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"SampleID"</span>, <span class="st">"prob_source_new_pi"</span><span class="op">)</span></span>
 <span><span class="va">prob_source_pairs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/merge.html" class="external-link">merge</a></span><span class="op">(</span><span class="va">prob_source</span>, <span class="va">prob_source_new_pi</span>, by <span class="op">=</span> <span class="st">"SampleID"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">prob_source_pairs</span><span class="op">$</span><span class="va">prob_source</span>, <span class="va">prob_source_pairs</span><span class="op">$</span><span class="va">prob_source_new_pi</span>,</span>
@@ -718,7 +716,7 @@ probability under the new sampling fraction prior.</p>
 <p><img src="mcc_tree_pipeline_files/figure-html/prob_source_scatterplot-1.png" width="700"></p>
 <p>We can also redo our logistic (or other) regression with these new
 probabilities, and look at the new odds ratios.</p>
-<div class="sourceCode" id="cb40"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb39"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">prob_source_new_pi</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"SampleID"</span>, <span class="st">"prob_source"</span><span class="op">)</span></span>
 <span><span class="va">mdl_logistic_new</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/regression.html">regression</a></span><span class="op">(</span>method <span class="op">=</span> <span class="st">"logistic"</span>,</span>
 <span>                               cleaned_data <span class="op">=</span> <span class="va">cleaned_data</span>,</span>
@@ -747,13 +745,13 @@ probabilities, and look at the new odds ratios.</p>
 <span><span class="co">## AIC: 222.53</span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## Number of Fisher Scoring iterations: 4</span></span></code></pre>
-<div class="sourceCode" id="cb42"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb41"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Get odds ratios (adjusted for other covariates)</span></span>
 <span><span class="va">adj_odds_ratios_new</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>est <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp</a></span><span class="op">(</span><span class="va">mdl_logistic_new</span><span class="op">$</span><span class="va">coefficients</span><span class="op">)</span>,</span>
 <span>                                  row.names <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">mdl_logistic_new</span><span class="op">$</span><span class="va">coefficients</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">adj_odds_ratios_new</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span><span class="va">adj_odds_ratios_new</span>, <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/confint.html" class="external-link">confint</a></span><span class="op">(</span><span class="va">mdl_logistic_new</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Waiting for profiling to be done...</span></span></code></pre>
-<div class="sourceCode" id="cb44"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb43"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">adj_odds_ratios_new</span></span></code></pre></div>
 <pre><code><span><span class="co">##                      est      2.5 %    97.5 %</span></span>
 <span><span class="co">## (Intercept)    0.1211602 0.03975307 0.3245642</span></span>
