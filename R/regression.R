@@ -61,7 +61,7 @@ regression <- function(method = c("logistic", "linear",
       stop("All columns in cleaned_data must be numeric for Bayesian logistic regression")
     }
     cleaned_data$tp_source <- as.numeric(cleaned_data$prob_source > prob_cutoff)
-    covariates <- cleaned_data[, !(names(cleaned_data) %in% c("prob_source", "tp_source"))]
+    covariates <- cleaned_data[, !(names(cleaned_data) %in% c("prob_source", "tp_source")), drop = FALSE]
     # Run Isaac's Bayesian "homebrew": logistic regression with misclassification
     model_objects <- list(N = nrow(cleaned_data),
                           K = ncol(cleaned_data) - 2,
