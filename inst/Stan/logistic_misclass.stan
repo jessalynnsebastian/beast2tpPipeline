@@ -12,8 +12,8 @@ data {
   int<lower=0> K;
   //misclassified response
   int<lower=0, upper=1> z[N];
-  //covariates
-  matrix[N,K] X;
+  //covariates (INCLUDING intercept)
+  matrix[N,K+1] X;
   //prob(z=0 | y=0)
   real<lower=0> specificity;
   //prob(z = 1 | y=1)
@@ -21,8 +21,7 @@ data {
 }
 
 parameters {
-  real beta0;
-  vector[K] beta;
+  vector[K+1] beta;
 }
 
 model {
@@ -31,11 +30,10 @@ model {
   vector[N]  p;
   
   // Priors on coefficients - std normal
-  beta0 ~ std_normal();
   beta ~ std_normal();
   
   for (n in 1:N) {
-    prob_y1[n] = inv_logit(beta0 + dot_product(beta, X[n,]));
+    prob_y1[n] = inv_logit(dot_product(beta, X[n,]));
     prob_y0[n] = 1-prob_y1[n];
     p[n] = sensitivity*prob_y1[n] + (1-specificity)*prob_y0[n];
 
