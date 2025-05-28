@@ -56,8 +56,9 @@ create_BEAST2_clusters <- function(seqs,
   cluster_assignments <- na.omit(cluster_assignments)
 
   # Match cluster assignments to sequences via sample ID
+  seqs <- data.frame(sample_id = rownames(seqs), seqs, row.names = NULL)
   seq_cluster_df <- merge(cluster_assignments, seqs,
-                          by.x = "sample_id", by.y = "row.names")
+                          by = "sample_id")
   cluster_dna_list <- split(
     seq_cluster_df,
     seq_cluster_df$cluster_name
