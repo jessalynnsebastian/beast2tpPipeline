@@ -507,7 +507,7 @@ do this, using a TransPhylo function with only the first cluster.</p>
 <div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">transphylo_res</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="va">transphylo_res_file</span><span class="op">)</span></span>
 <span><span class="fu">TransPhylo</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/TransPhylo/man/plotTraces.html" class="external-link">plotTraces</a></span><span class="op">(</span><span class="va">transphylo_res</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span></code></pre></div>
-<p><img src="images%2Fexample_traceplots.svg"><!-- --></p>
+<p><img src="images/example_traceplots.svg"><!-- --></p>
 <p>TransPhylo also provides methods of summarizing the posterior trees,
 and plotting the result. For example, we can get the “medoid” (extension
 of median) tree and plot it. Here, the phylogenetic tree is plotted with
@@ -518,7 +518,7 @@ tree”).</p>
 <div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">medoid</span> <span class="op">&lt;-</span> <span class="fu">TransPhylo</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/TransPhylo/man/medTTree.html" class="external-link">medTTree</a></span><span class="op">(</span><span class="va">transphylo_res</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span>
 <span><span class="fu">TransPhylo</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/TransPhylo/man/plotCTree.html" class="external-link">plotCTree</a></span><span class="op">(</span><span class="va">medoid</span><span class="op">)</span></span></code></pre></div>
-<p><img src="images%2Fmedttree.svg"><!-- --></p>
+<p><img src="images/medttree.svg"><!-- --></p>
 <p>There is also a “consensus” tree, which is built by combining clades
 occurring in at least some fraction of the posterior samples. This tree
 will not necessarily be a tree that is in the posterior samples. It can
@@ -527,7 +527,7 @@ be plotted with <code>plot</code>. In TransPhylo this object is called a
 <div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">cons</span> <span class="op">&lt;-</span> <span class="fu">TransPhylo</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/TransPhylo/man/consTTree.html" class="external-link">consTTree</a></span><span class="op">(</span><span class="va">transphylo_res</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">cons</span><span class="op">)</span></span></code></pre></div>
-<p><img src="images%2Fconsttree.svg"><!-- --></p>
+<p><img src="images/consttree.svg"><!-- --></p>
 <p>We may also be interested in looking at the distribution of the
 probabilities assigned by TransPhylo:</p>
 <div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
@@ -690,7 +690,7 @@ them to the old results.</p>
 <span><span class="co"># Look at some traceplots again</span></span>
 <span><span class="va">transphylo_res</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="va">transphylo_res_file</span><span class="op">)</span></span>
 <span><span class="fu">TransPhylo</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/TransPhylo/man/plotTraces.html" class="external-link">plotTraces</a></span><span class="op">(</span><span class="va">transphylo_res</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span></code></pre></div>
-<p><img src="images%2Fexample_traceplots_pi2.svg"><!-- --></p>
+<p><img src="images/example_traceplots_pi2.svg"><!-- --></p>
 <p>Now we have the updated probabilities, and we can compare their
 distribution to their distribution under the old sampling fraction
 prior.</p>
@@ -774,7 +774,7 @@ probabilities, and look at the new odds ratios.</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
 </div>
 
     </footer>
